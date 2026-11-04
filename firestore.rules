@@ -1,0 +1,76 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function isAdmin() {
+      return signedIn() && request.auth.token.admin == true;
+    }
+
+    match /users/{userId} {
+      allow read: if signedIn() && request.auth.uid == userId;
+      allow create: if signedIn()
+        && request.auth.uid == userId
+        && request.resource.data.keys().hasOnly([
+          "uid", "displayName", "email", "photoURL", "createdAt", "updatedAt"
+        ])
+        && request.resource.data.keys().hasAll(["uid", "createdAt", "updatedAt"])
+        && request.resource.data.uid == userId
+        && request.resource.data.createdAt == request.time
+        && request.resource.data.updatedAt == request.time;
+      allow update: if signedIn()
+        && request.auth.uid == userId
+        && request.resource.data.uid == userId
+        && request.resource.data.keys().hasOnly([
+          "uid", "displayName", "email", "photoURL", "createdAt", "updatedAt"
+        ])
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+          "displayName", "email", "photoURL", "updatedAt"
+        ])
+        && request.resource.data.updatedAt == request.time;
+      allow delete: if false;
+    }
+
+    match /workshops/{workshopId} {
+      allow read: if isAdmin() || resource.data.published == true;
+      allow write: if false;
+    }
+
+    match /bookings/{bookingId} {
+      allow read: if isAdmin()
+        || (signedIn() && resource.data.customerId == request.auth.uid);
+      allow create, update, delete: if false;
+    }
+
+    match /payments/{paymentId} {
+      allow read: if isAdmin()
+        || (signedIn() && resource.data.customerId == request.auth.uid);
+      allow create, update, delete: if false;
+    }
+
+    match /razorpayWebhookEvents/{eventId} {
+      allow read, write: if false;
+    }
+
+    match /tickets/{ticketId} {
+      allow read: if isAdmin()
+        || (signedIn() && resource.data.customerId == request.auth.uid);
+      allow create, update, delete: if false;
+    }
+
+    match /adminRoles/{userId} {
+      allow read, write: if false;
+    }
+
+    match /bookingLimits/{limitId} {
+      allow read, write: if false;
+    }
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
