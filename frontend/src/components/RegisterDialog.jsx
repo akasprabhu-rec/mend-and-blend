@@ -152,7 +152,7 @@ export default function RegisterDialog({ workshop, user, onClose, onReserved }) 
           contact: participant.phone,
         },
         notes: { bookingId: reservation.bookingId },
-        theme: { color: "#493f3b" },
+        theme: { color: "#405F80" },
         modal: {
           ondismiss: async () => {
             try {
@@ -252,7 +252,7 @@ export default function RegisterDialog({ workshop, user, onClose, onReserved }) 
       onClick={(event) => {
         if (event.target === ref.current) onClose();
       }}
-      className="m-auto max-h-[calc(100dvh-2rem)] w-[calc(100vw-2rem)] max-w-[34rem] overflow-y-auto rounded-[2rem] bg-ivory p-0 text-charcoal backdrop:bg-charcoal/50"
+      className="m-auto max-h-[calc(100dvh-2rem)] w-[calc(100vw-2rem)] max-w-[34rem] overflow-y-auto rounded-[2rem] bg-white p-0 text-charcoal shadow-2xl backdrop:bg-charcoal/50"
     >
       {workshop && (
         <div className="p-5 sm:p-10">
@@ -326,7 +326,7 @@ export default function RegisterDialog({ workshop, user, onClose, onReserved }) 
                 <Link
                   to="/login"
                   state={{ from: { pathname: "/", hash: "#workshops" } }}
-                  className="inline-flex items-center justify-center rounded-full bg-charcoal px-6 py-3 text-sm font-medium text-ivory hover:bg-olive-dark"
+                  className="inline-flex items-center justify-center rounded-full bg-brand-blue px-6 py-3 text-sm font-medium text-white hover:bg-brand-blue/90"
                 >
                   Sign in with Google
                 </Link>

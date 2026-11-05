@@ -1,6 +1,6 @@
 const variants = {
-  primary: "bg-charcoal text-ivory hover:bg-olive-dark",
-  secondary: "border border-charcoal/50 text-charcoal hover:bg-charcoal hover:text-ivory",
+  primary: "bg-brand-blue text-white hover:bg-brand-blue/90",
+  secondary: "border border-brand-blue/50 text-brand-blue hover:bg-brand-blue hover:text-white",
 };
 
 // Renders a link when `href` is given, otherwise a button.

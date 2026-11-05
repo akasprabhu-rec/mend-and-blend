@@ -274,7 +274,7 @@ export default function AdminEventsSection({ user }) {
       </div>
       <p className="mt-2 max-w-3xl text-sm text-charcoal/70">Create and publish future events here. The event date does not open or close ticket sales; registration is controlled by its own window and pause switch.</p>
       {error && <p className="mt-5 rounded-2xl border border-rose bg-white/80 p-4 text-sm" role="alert">{error}</p>}
-      {message && <p className="mt-5 rounded-2xl bg-sage/40 p-4 text-sm" role="status">{message}</p>}
+      {message && <p className="mt-5 rounded-2xl bg-brand-blue/10 p-4 text-sm text-brand-blue" role="status">{message}</p>}
       {formEvent !== undefined && <EventForm key={formEvent?.id || "new"} event={formEvent} user={user} onCancel={() => setFormEvent(undefined)} onSaved={saved} />}
       <div className="mt-5 grid gap-3 sm:grid-cols-3">
         <label className="text-sm">Event schedule<select className="mt-1 w-full rounded-xl border border-charcoal/20 bg-white px-3 py-2" value={phaseFilter} onChange={(e) => setPhaseFilter(e.target.value)}><option value="all">All events</option><option value="upcoming">Upcoming</option><option value="ongoing">Ongoing</option><option value="past">Past</option></select></label>
@@ -286,7 +286,7 @@ export default function AdminEventsSection({ user }) {
       <div className="mt-5 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
         {filteredEvents.map((event) => (
           <article key={event.id} className="rounded-[1.75rem] border border-rose/25 bg-white/80 p-5 shadow-sm">
-            <div className="flex items-start justify-between gap-3"><div className="min-w-0"><p className="text-xs font-semibold uppercase tracking-wider text-olive-dark">{event.phase} · {event.status}</p><h3 className="mt-2 break-words text-2xl font-medium">{event.title}</h3></div><span className="shrink-0 rounded-full bg-sage/40 px-3 py-1 text-xs">{salesLabels[event.registrationStatus] || event.registrationStatus}</span></div>
+            <div className="flex items-start justify-between gap-3"><div className="min-w-0"><p className="text-xs font-semibold uppercase tracking-wider text-olive-dark">{event.phase} · {event.status}</p><h3 className="mt-2 break-words text-2xl font-medium">{event.title}</h3></div><span className="shrink-0 rounded-full bg-brand-blue px-3 py-1 text-xs text-white">{salesLabels[event.registrationStatus] || event.registrationStatus}</span></div>
             <p className="mt-3 text-sm">{event.date ? formatWorkshopDate(event.date) : "Date not set"} · {event.start}–{event.end}</p>
             <p className="mt-1 text-sm text-charcoal/70">{event.venueName || event.venue}</p>
             <dl className="mt-4 grid grid-cols-2 gap-3 border-t border-charcoal/10 pt-4 text-sm sm:grid-cols-3">

@@ -62,7 +62,7 @@ export default function LoginPage() {
           type="button"
           onClick={handleGoogleSignIn}
           disabled={!firebaseConfigured || submitting}
-          className="mt-8 w-full rounded-full bg-charcoal px-6 py-3 font-medium text-ivory transition-colors hover:bg-olive-dark disabled:cursor-not-allowed disabled:opacity-50"
+          className="mt-8 w-full rounded-full bg-brand-blue px-6 py-3 font-medium text-white transition-colors hover:bg-brand-blue/90 disabled:cursor-not-allowed disabled:opacity-50"
         >
           {submitting ? "Signing in…" : "Continue with Google"}
         </button>

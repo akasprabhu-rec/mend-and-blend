@@ -88,7 +88,7 @@ export default function AdminLoginPage() {
           type="button"
           onClick={handleSignIn}
           disabled={submitting}
-          className="mt-8 w-full rounded-full bg-charcoal px-6 py-3 font-medium text-ivory transition-colors hover:bg-olive-dark disabled:cursor-not-allowed disabled:opacity-50"
+          className="mt-8 w-full rounded-full bg-brand-blue px-6 py-3 font-medium text-white transition-colors hover:bg-brand-blue/90 disabled:cursor-not-allowed disabled:opacity-50"
         >
           {submitting ? "Verifying account…" : "Continue with Google"}
         </button>

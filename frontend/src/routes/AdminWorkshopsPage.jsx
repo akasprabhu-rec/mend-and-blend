@@ -83,7 +83,7 @@ export default function AdminWorkshopsPage() {
       </header>
 
       {error && <p className="mt-6 rounded-2xl border border-rose p-4" role="alert">{error}</p>}
-      {message && <p className="mt-6 rounded-2xl bg-sage/40 p-4" role="status">{message}</p>}
+      {message && <p className="mt-6 rounded-2xl bg-brand-blue/10 p-4 text-brand-blue" role="status">{message}</p>}
 
       {!loading && workshops.length === 0 && !error && (
         <section className="mt-8 rounded-[2rem] bg-white/70 p-6">
@@ -96,7 +96,7 @@ export default function AdminWorkshopsPage() {
             type="button"
             disabled={busy !== ""}
             onClick={seedWorkshops}
-            className="mt-5 rounded-full bg-charcoal px-6 py-3 text-sm font-medium text-ivory disabled:opacity-50"
+            className="mt-5 rounded-full bg-brand-blue px-6 py-3 text-sm font-medium text-white disabled:opacity-50"
           >
             {busy === "seed" ? "Initializing…" : "Initialize six sessions"}
           </button>
@@ -117,7 +117,7 @@ export default function AdminWorkshopsPage() {
                 </div>
                 <span
                   className={`shrink-0 rounded-full px-3 py-1 text-xs font-medium ${
-                    workshop.published ? "bg-sage/50" : "border border-charcoal/30"
+                    workshop.published ? "bg-brand-blue text-white" : "border border-charcoal/30"
                   }`}
                 >
                   {workshop.published ? "Published" : "Unpublished"}

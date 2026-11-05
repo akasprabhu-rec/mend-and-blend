@@ -13,15 +13,12 @@ export default function WorkshopCard({ workshop, dateLabel, onRegister }) {
     completed: "Completed",
     unpublished: "Unpublished",
   }[registrationStatus] || "Registration unavailable";
-  const toneIndex = Number.isFinite(Number(number)) ? (Number(number) - 1) % 3 : 0;
-  const tone = ["bg-rose/35", "bg-lavender/25", "bg-sage/40"][toneIndex];
-  const lineClass = ["text-olive-dark", "text-lavender-dark", "text-olive-dark"][toneIndex];
 
   return (
-    <article className={`flex h-full flex-col rounded-[2rem] p-8 ${tone}`}>
+    <article className="flex h-full flex-col rounded-[2rem] border border-brand-blue/15 bg-white p-8 shadow-sm transition-shadow duration-300 hover:shadow-md">
       <div className="flex items-center justify-between">
         <span className="text-sm font-medium tracking-[0.2em] text-charcoal/70">SESSION {number}</span>
-        <svg viewBox="0 0 80 24" className={`h-6 w-20 ${lineClass}`} fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
+        <svg viewBox="0 0 80 24" className="h-6 w-20 text-brand-blue" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
           <path d="M2 14 C14 -2 24 -2 34 12 S56 26 78 8" />
         </svg>
       </div>

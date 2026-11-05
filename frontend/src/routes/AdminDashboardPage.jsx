@@ -88,6 +88,9 @@ export default function AdminDashboardPage() {
   const [scanToken, setScanToken] = useState("");
   const [scanResult, setScanResult] = useState(null);
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
+  const [activeSection, setActiveSection] = useState(
+    () => window.location.hash.slice(1) || "overview",
+  );
   const [registrationFilters, setRegistrationFilters] = useState({
     eventId: "all",
     date: "all",
@@ -231,14 +234,14 @@ export default function AdminDashboardPage() {
       </header>
 
       {error && <p className="mt-6 rounded-2xl border border-rose bg-white/80 p-4" role="alert">{error}</p>}
-      {message && <p className="mt-6 rounded-2xl bg-sage/40 p-4" role="status">{message}</p>}
+      {message && <p className="mt-6 rounded-2xl bg-brand-blue/10 p-4 text-brand-blue" role="status">{message}</p>}
 
-      <nav aria-label="Admin dashboard sections" className="sticky top-0 z-10 mt-7 rounded-2xl border border-rose/20 bg-ivory/95 p-3 backdrop-blur">
+      <nav aria-label="Admin dashboard sections" className="sticky top-0 z-10 mt-7 rounded-2xl border border-white/15 bg-brand-blue p-3 text-white shadow-sm">
         <div className="flex items-center justify-between md:hidden">
           <span className="text-sm font-medium">Dashboard sections</span>
           <button
             type="button"
-            className="rounded-full border border-charcoal/20 px-4 text-sm font-medium"
+            className="rounded-full border border-white/40 px-4 text-sm font-medium text-white hover:bg-white/10"
             aria-expanded={mobileNavOpen}
             aria-controls="admin-mobile-sections"
             onClick={() => setMobileNavOpen((open) => !open)}
@@ -248,19 +251,37 @@ export default function AdminDashboardPage() {
         </div>
         <div className="hidden flex-wrap gap-2 md:flex">
           {dashboardSections.map(([id, label]) => (
-            <a key={id} className="flex min-h-11 items-center rounded-full px-3 text-sm hover:bg-sage/40" href={`#${id}`}>
+            <a
+              key={id}
+              aria-current={activeSection === id ? "location" : undefined}
+              className={`flex min-h-11 items-center rounded-full px-3 text-sm ${
+                activeSection === id
+                  ? "bg-white/20 text-white"
+                  : "text-white/85 hover:bg-white/15 hover:text-white"
+              }`}
+              href={`#${id}`}
+              onClick={() => setActiveSection(id)}
+            >
               {label}
             </a>
           ))}
         </div>
         {mobileNavOpen && (
-          <div id="admin-mobile-sections" className="mt-2 grid gap-1 border-t border-charcoal/10 pt-2 md:hidden">
+          <div id="admin-mobile-sections" className="mt-2 grid gap-1 border-t border-white/20 pt-2 md:hidden">
             {dashboardSections.map(([id, label]) => (
               <a
                 key={id}
-                className="flex min-h-11 items-center rounded-xl px-3 text-sm font-medium hover:bg-sage/40"
+                aria-current={activeSection === id ? "location" : undefined}
+                className={`flex min-h-11 items-center rounded-xl px-3 text-sm font-medium ${
+                  activeSection === id
+                    ? "bg-white/20 text-white"
+                    : "text-white/85 hover:bg-white/15 hover:text-white"
+                }`}
                 href={`#${id}`}
-                onClick={() => setMobileNavOpen(false)}
+                onClick={() => {
+                  setActiveSection(id);
+                  setMobileNavOpen(false);
+                }}
               >
                 {label}
               </a>
@@ -297,7 +318,7 @@ export default function AdminDashboardPage() {
               type="button"
               onClick={seedWorkshops}
               disabled={busy !== ""}
-              className="mt-4 rounded-full bg-charcoal px-5 py-3 text-sm font-medium text-ivory disabled:opacity-50"
+              className="mt-4 rounded-full bg-brand-blue px-5 py-3 text-sm font-medium text-white disabled:opacity-50"
             >
               {busy === "seed" ? "Initializing…" : "Initialize six sessions"}
             </button>
@@ -314,7 +335,7 @@ export default function AdminDashboardPage() {
                   </p>
                   <h3 className="mt-2 break-words text-2xl font-medium">{workshop.title}</h3>
                 </div>
-                <span className={`rounded-full px-3 py-1 text-xs font-semibold ${workshop.published ? "bg-sage/50 text-olive-dark" : "bg-ivory text-charcoal/70"}`}>
+                <span className={`rounded-full px-3 py-1 text-xs font-semibold ${workshop.published ? "bg-brand-blue text-white" : "bg-ivory text-charcoal/70"}`}>
                   {workshop.published ? "Published" : "Unpublished"}
                 </span>
               </div>
@@ -350,7 +371,7 @@ export default function AdminDashboardPage() {
             type="button"
             onClick={() => exportRegistrations(displayedRegistrations)}
             disabled={displayedRegistrations.length === 0}
-            className="rounded-full bg-charcoal px-5 py-3 text-sm font-medium text-ivory hover:bg-olive-dark disabled:cursor-not-allowed disabled:opacity-50"
+            className="rounded-full bg-brand-blue px-5 py-3 text-sm font-medium text-white hover:bg-brand-blue/90 disabled:cursor-not-allowed disabled:opacity-50"
           >
             Export CSV
           </button>
@@ -394,7 +415,7 @@ export default function AdminDashboardPage() {
                   <p className="mt-1 break-all text-xs text-charcoal/65">{registration.email || "—"}</p>
                   <p className="mt-1 text-xs text-charcoal/65">{registration.phone || "—"}</p>
                 </div>
-                <span className="shrink-0 rounded-full bg-sage/40 px-2 py-1 text-xs">{registration.paymentStatus}</span>
+                <span className="shrink-0 rounded-full bg-brand-blue/10 px-2 py-1 text-xs text-brand-blue">{registration.paymentStatus}</span>
               </div>
               <p className="mt-3 break-words text-sm font-medium">{registration.workshopName}</p>
               <p className="mt-1 text-xs text-charcoal/65">
@@ -483,7 +504,7 @@ export default function AdminDashboardPage() {
             <button
               type="submit"
               disabled={scanToken.trim().length !== 43}
-              className="self-start rounded-full bg-charcoal px-5 py-3 text-sm font-medium text-ivory hover:bg-olive-dark disabled:cursor-not-allowed disabled:opacity-50"
+              className="self-start rounded-full bg-brand-blue px-5 py-3 text-sm font-medium text-white hover:bg-brand-blue/90 disabled:cursor-not-allowed disabled:opacity-50"
             >
               Validate and redeem
             </button>
@@ -492,9 +513,9 @@ export default function AdminDashboardPage() {
             <div
               className={`mt-5 rounded-2xl p-4 ${
                 scanResult.status === "valid"
-                  ? "bg-sage/40"
+                  ? "bg-emerald-50 text-emerald-950"
                   : scanResult.status === "already_used"
-                    ? "bg-rose/25"
+                    ? "bg-amber-50 text-amber-950"
                     : "border border-rose bg-white"
               }`}
               role="status"

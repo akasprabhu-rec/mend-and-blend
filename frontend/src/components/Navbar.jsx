@@ -22,7 +22,7 @@ export default function Navbar() {
   }
 
   return (
-    <header className="sticky top-0 z-50 border-b border-charcoal/10 bg-ivory/90 backdrop-blur">
+    <header className="sticky top-0 z-50 border-b border-white/15 bg-brand-blue text-white shadow-sm">
       <nav aria-label="Main" className="mx-auto flex max-w-6xl items-center justify-between px-6 py-3">
         <Link to="/" onClick={close} className="flex items-center gap-3">
           <img src={logo} alt="" className="h-11 w-11 rounded-xl object-cover" />
@@ -32,27 +32,31 @@ export default function Navbar() {
         <ul className="hidden items-center gap-8 md:flex">
           {NAV_LINKS.map((link) => (
             <li key={link.href}>
-              <a href={link.href} className="text-sm font-medium hover:text-lavender-dark">
+              <a href={link.href} className="text-sm font-medium text-white/85 hover:text-white">
                 {link.label}
               </a>
             </li>
           ))}
         </ul>
-        <Button href="#workshops" className="!hidden md:!inline-flex">
+        <Button
+          href="#workshops"
+          variant="secondary"
+          className="!hidden border-white bg-white text-brand-blue hover:bg-white/90 md:!inline-flex"
+        >
           Register
         </Button>
         <div className="hidden items-center gap-4 md:flex">
           {user ? (
             <>
-              <Link to="/my-tickets" className="text-sm font-medium hover:text-lavender-dark">
+              <Link to="/my-tickets" className="text-sm font-medium text-white/85 hover:text-white">
                 My tickets
               </Link>
-              <button type="button" onClick={handleSignOut} className="text-sm hover:underline">
+              <button type="button" onClick={handleSignOut} className="text-sm text-white/85 hover:text-white hover:underline">
                 Sign out
               </button>
             </>
           ) : (
-            <Link to="/login" className="text-sm font-medium hover:text-lavender-dark">
+            <Link to="/login" className="text-sm font-medium text-white/85 hover:text-white">
               Sign in
             </Link>
           )}
@@ -60,7 +64,7 @@ export default function Navbar() {
 
         <button
           type="button"
-          className="min-h-11 min-w-11 rounded-full p-2 md:hidden"
+          className="min-h-11 min-w-11 rounded-full p-2 text-white hover:bg-white/10 md:hidden"
           aria-expanded={open}
           aria-controls="mobile-menu"
           aria-label={open ? "Close menu" : "Open menu"}
@@ -73,7 +77,7 @@ export default function Navbar() {
       </nav>
 
       {open && (
-        <div id="mobile-menu" className="border-t border-charcoal/10 px-6 pb-6 md:hidden">
+        <div id="mobile-menu" className="border-t border-white/15 px-6 pb-6 md:hidden">
           <ul className="flex flex-col gap-1 py-3">
             {NAV_LINKS.map((link) => (
               <li key={link.href}>
@@ -97,7 +101,12 @@ export default function Navbar() {
               Sign in
             </Link>
           )}
-          <Button href="#workshops" onClick={close} className="w-full">
+          <Button
+            href="#workshops"
+            onClick={close}
+            variant="secondary"
+            className="w-full border-white bg-white text-brand-blue hover:bg-white/90"
+          >
             Register for a workshop
           </Button>
         </div>

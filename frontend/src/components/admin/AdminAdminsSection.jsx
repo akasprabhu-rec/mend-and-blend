@@ -139,7 +139,7 @@ export default function AdminAdminsSection({ user }) {
       <h2 className="mt-2 text-3xl font-medium">Manage admins</h2>
       <p className="mt-2 max-w-3xl text-sm text-charcoal/70">Roles are trusted Firebase Authentication custom claims managed by the backend. Event Admins can manage events and tickets but cannot manage administrators.</p>
       {error && <p className="mt-5 rounded-2xl border border-rose bg-white/80 p-4 text-sm" role="alert">{error}</p>}
-      {message && <p className="mt-5 rounded-2xl bg-sage/40 p-4 text-sm" role="status">{message}</p>}
+      {message && <p className="mt-5 rounded-2xl bg-brand-blue/10 p-4 text-sm text-brand-blue" role="status">{message}</p>}
       <form onSubmit={addAdmin} className="mt-5 grid gap-3 rounded-2xl border border-rose/25 bg-white/80 p-5 sm:grid-cols-[1fr_auto_auto] sm:items-end">
         <label className="text-sm font-medium">Google account email<input type="email" required value={email} onChange={(event) => setEmail(event.target.value)} placeholder="person@example.com" className="mt-1 w-full rounded-xl border border-charcoal/20 bg-white px-3 py-2.5" /></label>
         <label className="text-sm font-medium">Role<select value={role} onChange={(event) => setRole(event.target.value)} className="mt-1 w-full rounded-xl border border-charcoal/20 bg-white px-3 py-2.5"><option value="event_admin">Event Admin</option><option value="super_admin">Super Admin</option></select></label>
@@ -157,7 +157,7 @@ export default function AdminAdminsSection({ user }) {
                   <p className="break-words font-medium">{admin.name || "Google account"}</p>
                   <p className="mt-1 break-all text-sm text-charcoal/65">{admin.email}</p>
                 </div>
-                <span className={`shrink-0 rounded-full px-3 py-1 text-xs ${admin.disabled ? "bg-rose/30" : "bg-sage/40"}`}>
+                <span className={`shrink-0 rounded-full px-3 py-1 text-xs ${admin.disabled ? "bg-red-50 text-red-900" : "bg-emerald-50 text-emerald-950"}`}>
                   {admin.disabled ? "Deactivated" : "Active"}
                 </span>
               </div>
@@ -182,7 +182,7 @@ export default function AdminAdminsSection({ user }) {
                     <td className="px-4 py-4"><p className="font-medium">{admin.name || "Google account"}</p><p className="mt-1 text-xs text-charcoal/65">{admin.email}</p></td>
                     <td className="px-4 py-4">{admin.role === "super_admin" ? "Super Admin" : "Event Admin"}</td>
                     <td className="px-4 py-4">{displayDate(admin.createdAt)}</td>
-                    <td className="px-4 py-4"><span className={`rounded-full px-3 py-1 text-xs ${admin.disabled ? "bg-rose/30" : "bg-sage/40"}`}>{admin.disabled ? "Deactivated" : "Active"}</span></td>
+                    <td className="px-4 py-4"><span className={`rounded-full px-3 py-1 text-xs ${admin.disabled ? "bg-red-50 text-red-900" : "bg-emerald-50 text-emerald-950"}`}>{admin.disabled ? "Deactivated" : "Active"}</span></td>
                     <td className="px-4 py-4">
                       <AdminControls admin={admin} user={user} busy={busy} updateAdmin={updateAdmin} removeAdmin={removeAdmin} />
                     </td>

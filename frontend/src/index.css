@@ -1,14 +1,18 @@
 @import "tailwindcss";
 
 @theme static {
-  --color-ivory: #f5f0e8;
-  --color-sage: #a7b59a;
-  --color-olive: #78836b;
-  --color-olive-dark: #596350; /* olive darkened for readable small text */
-  --color-rose: #c9a99a;
-  --color-lavender: #81768d;
-  --color-lavender-dark: #62586e; /* lavender darkened for readable text */
-  --color-charcoal: #493f3b;
+  --color-brand-blue: #405F80;
+  --color-brand-ivory: #F8F7F5;
+  --color-brand-white: #FFFFFF;
+
+  --color-ivory: var(--color-brand-ivory);
+  --color-sage: var(--color-brand-blue);
+  --color-olive: var(--color-brand-blue);
+  --color-olive-dark: var(--color-brand-blue);
+  --color-rose: var(--color-brand-blue);
+  --color-lavender: var(--color-brand-blue);
+  --color-lavender-dark: var(--color-brand-blue);
+  --color-charcoal: var(--color-brand-blue);
 
   --font-serif: "Cormorant Garamond", Georgia, serif;
   --font-sans: "DM Sans", system-ui, sans-serif;
@@ -29,8 +33,8 @@
 @layer base {
   html { scroll-behavior: smooth; }
   body {
-    background-color: var(--color-ivory);
-    color: var(--color-charcoal);
+    background-color: var(--color-brand-ivory);
+    color: var(--color-brand-blue);
     font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;
   }
@@ -40,7 +44,15 @@
   dialog { max-width: calc(100vw - 2rem); }
   h1, h2, h3 { font-family: var(--font-serif); }
   section[id] { scroll-margin-top: 4.5rem; }
-  :focus-visible { outline: 2px solid var(--color-lavender-dark); outline-offset: 3px; }
+  :focus-visible { outline: 2px solid var(--color-brand-blue); outline-offset: 3px; }
+  input, select, textarea {
+    border-color: rgb(64 95 128 / 22%);
+    background-color: var(--color-brand-white);
+    color: var(--color-brand-blue);
+  }
+  input::placeholder, textarea::placeholder { color: rgb(64 95 128 / 65%); }
+  button, a { -webkit-tap-highlight-color: transparent; }
+  button:not(:disabled), a { transition: color 180ms ease, background-color 180ms ease, border-color 180ms ease; }
 }
 
 #admin-ticket-qr-reader,

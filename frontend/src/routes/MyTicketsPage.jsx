@@ -73,7 +73,7 @@ export default function MyTicketsPage() {
                 errorCorrectionLevel: "H",
                 margin: 2,
                 width: 280,
-                color: { dark: "#493F3B", light: "#FFFFFF" },
+                color: { dark: "#405F80", light: "#FFFFFF" },
               }),
             ]),
         );
@@ -147,7 +147,7 @@ export default function MyTicketsPage() {
                     </p>
                     <span
                       className={`rounded-full px-3 py-1 text-xs font-semibold ${
-                        valid ? "bg-sage/40 text-olive-dark" : "bg-rose/25 text-charcoal"
+                        valid ? "bg-brand-blue text-white" : "bg-brand-blue/10 text-brand-blue"
                       }`}
                     >
                       {valid ? "Valid ticket" : "Not valid"}
@@ -188,7 +188,7 @@ export default function MyTicketsPage() {
                     type="button"
                     onClick={() => handleDownload(ticket)}
                     disabled={!ticket.qrToken || downloading === ticket.id}
-                    className="mt-6 rounded-full bg-charcoal px-5 py-3 text-sm font-medium text-ivory transition hover:bg-olive-dark disabled:cursor-not-allowed disabled:opacity-50"
+                    className="mt-6 rounded-full bg-brand-blue px-5 py-3 text-sm font-medium text-white transition hover:bg-brand-blue/90 disabled:cursor-not-allowed disabled:opacity-50"
                   >
                     {downloading === ticket.id ? "Preparing PDF…" : "Download ticket PDF"}
                   </button>

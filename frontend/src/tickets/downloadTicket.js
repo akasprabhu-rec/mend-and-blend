@@ -1,9 +1,9 @@
 const colors = {
-  ivory: [245, 240, 232],
-  charcoal: [73, 63, 59],
-  olive: [89, 99, 80],
-  rose: [201, 169, 154],
-  muted: [116, 105, 99],
+  ivory: [248, 247, 245],
+  blue: [64, 95, 128],
+  muted: [64, 95, 128],
+  valid: [55, 105, 76],
+  invalid: [145, 75, 75],
 };
 
 function formatSessionDate(date) {
@@ -36,7 +36,7 @@ export async function downloadTicket(ticket, fallbackName) {
     errorCorrectionLevel: "H",
     margin: 2,
     width: 360,
-    color: { dark: "#493F3B", light: "#FFFFFF" },
+    color: { dark: "#405F80", light: "#FFFFFF" },
   });
   const pdf = new jsPDF({ orientation: "portrait", unit: "mm", format: "a5" });
   const pageWidth = 148;
@@ -51,7 +51,7 @@ export async function downloadTicket(ticket, fallbackName) {
   pdf.rect(0, 0, pageWidth, pageHeight, "F");
   pdf.setFillColor(255, 255, 255);
   pdf.roundedRect(8, 8, 132, 194, 5, 5, "F");
-  pdf.setFillColor(...colors.charcoal);
+  pdf.setFillColor(...colors.blue);
   pdf.roundedRect(8, 8, 132, 43, 5, 5, "F");
   pdf.rect(8, 43, 132, 8, "F");
 
@@ -65,7 +65,7 @@ export async function downloadTicket(ticket, fallbackName) {
   pdf.text("WORKSHOP ADMISSION", 16, 35);
   pdf.text("A space for self-discovery and connection", 16, 42);
 
-  pdf.setFillColor(...(valid ? colors.olive : colors.rose));
+  pdf.setFillColor(...(valid ? colors.valid : colors.invalid));
   pdf.roundedRect(100, 17, 31, 9, 4, 4, "F");
   pdf.setTextColor(255, 255, 255);
   pdf.setFont("helvetica", "bold");
@@ -76,7 +76,7 @@ export async function downloadTicket(ticket, fallbackName) {
   pdf.setFont("helvetica", "bold");
   pdf.setFontSize(7);
   pdf.text("TICKET HOLDER", 16, 65);
-  pdf.setTextColor(...colors.charcoal);
+  pdf.setTextColor(...colors.blue);
   pdf.setFont("times", "bold");
   pdf.setFontSize(18);
   pdf.text(pdf.splitTextToSize(customerName, 116), 16, 74);
@@ -85,19 +85,19 @@ export async function downloadTicket(ticket, fallbackName) {
   pdf.setFont("helvetica", "bold");
   pdf.setFontSize(7);
   pdf.text("WORKSHOP", 16, 91);
-  pdf.setTextColor(...colors.charcoal);
+  pdf.setTextColor(...colors.blue);
   pdf.setFont("times", "bold");
   pdf.setFontSize(15);
   pdf.text(pdf.splitTextToSize(workshopName, 116), 16, 99);
 
-  pdf.setDrawColor(...colors.rose);
+  pdf.setDrawColor(...colors.blue);
   pdf.setLineWidth(0.35);
   pdf.line(16, 106, 132, 106);
   pdf.setTextColor(...colors.muted);
   pdf.setFont("helvetica", "bold");
   pdf.setFontSize(7);
   pdf.text("DATE AND TIME", 16, 115);
-  pdf.setTextColor(...colors.charcoal);
+  pdf.setTextColor(...colors.blue);
   pdf.setFont("helvetica", "normal");
   pdf.setFontSize(10);
   pdf.text(formatSessionDate(ticket.sessionDate), 16, 123);
@@ -107,7 +107,7 @@ export async function downloadTicket(ticket, fallbackName) {
   pdf.setFont("helvetica", "bold");
   pdf.setFontSize(7);
   pdf.text("VENUE", 16, 140);
-  pdf.setTextColor(...colors.charcoal);
+  pdf.setTextColor(...colors.blue);
   pdf.setFont("helvetica", "normal");
   pdf.setFontSize(9);
   pdf.text(pdf.splitTextToSize(venue, 116), 16, 147);
