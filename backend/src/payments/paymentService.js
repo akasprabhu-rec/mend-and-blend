@@ -3,9 +3,10 @@ import { FieldValue, Timestamp } from "firebase-admin/firestore";
 import { getDatabase } from "../firebaseAdmin.js";
 import { createTicketRecord } from "../tickets/ticketRecord.js";
 import { getRazorpay } from "./razorpay.js";
-import { canMarkPaymentAuthorized } from "./paymentStatus.js";
+import { canIssueTicket, canMarkPaymentAuthorized } from "./paymentStatus.js";
 import { verifyCheckoutSignature } from "./signatures.js";
 import { registrationWindowError } from "../services/eventService.js";
+import { createRazorpayOrderPayload } from "./orderPayload.js";
 
 const checkoutHoldMinutes = Number(process.env.PAYMENT_HOLD_MINUTES || 20);
 if (
@@ -162,12 +163,13 @@ export async function createPaymentOrder(uid, bookingId) {
   if (claim.existing) return claim.existing;
 
   try {
-    const order = await gateway.orders.create({
-      amount: claim.amountInSubunits,
-      currency: "INR",
-      receipt: bookingId,
-      notes: { bookingId, customerId: uid },
-    });
+    const order = await gateway.orders.create(
+      createRazorpayOrderPayload({
+        amountInSubunits: claim.amountInSubunits,
+        bookingId,
+        uid,
+      }),
+    );
 
     const paymentRef = db.collection("payments").doc(order.id);
     const limitRef = db.collection("bookingLimits").doc(claim.booking.limitId);
@@ -358,7 +360,7 @@ async function applyCapturedPayment({
         payment.amountInSubunits === amount &&
         payment.currency === currency &&
         payment.razorpayPaymentId === paymentId;
-      if (verifiedBooking && !ticketSnapshot.exists) {
+      if (canIssueTicket(payment.status, verifiedBooking) && !ticketSnapshot.exists) {
         transaction.create(
           ticketRef,
           createTicketRecord({
@@ -412,8 +414,9 @@ async function applyCapturedPayment({
       workshopSnapshot.exists &&
       !registrationWindowError(workshopSnapshot.data(), now.toMillis());
 
+    const resultingPaymentStatus = reservationIsCurrent ? "captured" : "refund_required";
     transaction.update(paymentRef, {
-      status: reservationIsCurrent ? "captured" : "refund_required",
+      status: resultingPaymentStatus,
       razorpayPaymentId: paymentId,
       method: method || null,
       capturedAt: now,
@@ -440,15 +443,17 @@ async function applyCapturedPayment({
       reservationVersion: (workshopSnapshot.data().reservationVersion || 0) + 1,
       updatedAt: now,
     });
-    transaction.create(
-      ticketRef,
-      createTicketRecord({
-        booking,
-        bookingId: bookingSnapshot.id,
-        customerId: booking.customerId,
-        issuedAt: now,
-      }),
-    );
+    if (canIssueTicket(resultingPaymentStatus, reservationIsCurrent)) {
+      transaction.create(
+        ticketRef,
+        createTicketRecord({
+          booking,
+          bookingId: bookingSnapshot.id,
+          customerId: booking.customerId,
+          issuedAt: now,
+        }),
+      );
+    }
     return { duplicate: false, paymentStatus: "captured", bookingStatus: "confirmed" };
   });
 }
@@ -713,9 +718,13 @@ export async function cancelPaymentCheckout(uid, bookingId) {
   return releaseUnpaidReservation(uid, bookingId, "cancelled");
 }
 
-async function releaseUnpaidReservation(uid, bookingId, status) {
-  const db = getDatabase();
-  const now = Timestamp.now();
+export async function releaseUnpaidReservationWithDatabase({
+  db,
+  uid,
+  bookingId,
+  status = "cancelled",
+  now = Timestamp.now(),
+}) {
   const bookingRef = db.collection("bookings").doc(bookingId);
   return db.runTransaction(async (transaction) => {
     const bookingSnapshot = await transaction.get(bookingRef);
@@ -724,7 +733,9 @@ async function releaseUnpaidReservation(uid, bookingId, status) {
     }
     const booking = bookingSnapshot.data();
     if (booking.status === "confirmed") return { status: "confirmed" };
-    if (booking.status !== "payment_pending" && booking.status !== "order_creating") {
+    if (
+      !["reserved", "payment_pending", "order_creating"].includes(booking.status)
+    ) {
       return { status: booking.status };
     }
     const limitRef = db.collection("bookingLimits").doc(booking.limitId);
@@ -734,8 +745,13 @@ async function releaseUnpaidReservation(uid, bookingId, status) {
         : Promise.resolve(null),
       transaction.get(limitRef),
     ]);
-    if (paymentSnapshot?.exists && paymentSnapshot.data().status === "captured") {
-      return { status: "confirmed" };
+    if (paymentSnapshot?.exists) {
+      if (paymentSnapshot.data().status === "captured") {
+        return { status: "confirmed" };
+      }
+      if (paymentSnapshot.data().status === "authorized") {
+        return { status: "pending" };
+      }
     }
 
     transaction.update(bookingRef, {
@@ -752,6 +768,15 @@ async function releaseUnpaidReservation(uid, bookingId, status) {
       transaction.update(paymentSnapshot.ref, { status: "cancelled", updatedAt: now });
     }
     return { status };
+  });
+}
+
+async function releaseUnpaidReservation(uid, bookingId, status) {
+  return releaseUnpaidReservationWithDatabase({
+    db: getDatabase(),
+    uid,
+    bookingId,
+    status,
   });
 }
 

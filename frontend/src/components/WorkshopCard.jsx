@@ -2,7 +2,7 @@ import Button from "./ui/Button.jsx";
 import { formatINR } from "../data/siteData.js";
 
 export default function WorkshopCard({ workshop, dateLabel, onRegister }) {
-  const { number, title, start, end, price, description, availableSeats } = workshop;
+  const { title, start, end, price, description, availableSeats } = workshop;
   const registrationStatus = workshop.registrationStatus || "open";
   const registrationLabel = {
     open: "Registration open",
@@ -17,7 +17,7 @@ export default function WorkshopCard({ workshop, dateLabel, onRegister }) {
   return (
     <article className="flex h-full flex-col rounded-[2rem] border border-brand-blue/15 bg-white p-8 shadow-sm transition-shadow duration-300 hover:shadow-md">
       <div className="flex items-center justify-between">
-        <span className="text-sm font-medium tracking-[0.2em] text-charcoal/70">SESSION {number}</span>
+        <span className="text-sm font-medium tracking-[0.2em] text-charcoal/70">{workshop.category || "EVENT"}</span>
         <svg viewBox="0 0 80 24" className="h-6 w-20 text-brand-blue" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
           <path d="M2 14 C14 -2 24 -2 34 12 S56 26 78 8" />
         </svg>

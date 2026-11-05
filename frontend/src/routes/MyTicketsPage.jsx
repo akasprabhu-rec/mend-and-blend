@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
 import { collection, getDocs, query, where } from "firebase/firestore";
 import { useAuth } from "../auth/AuthContext.jsx";
 import { db } from "../firebase.js";
+import Navbar from "../components/Navbar.jsx";
 import { downloadTicket } from "../tickets/downloadTicket.js";
 
 function formatDate(date) {
@@ -102,10 +102,9 @@ export default function MyTicketsPage() {
   }
 
   return (
-    <main className="mx-auto min-h-screen max-w-5xl px-6 py-12 sm:py-16">
-      <Link to="/" className="text-sm font-medium text-olive-dark hover:underline">
-        ← Back to Mend and Blend
-      </Link>
+    <>
+      <Navbar />
+      <main className="mx-auto min-h-screen max-w-5xl px-6 py-12 sm:py-16">
       <header className="mt-8">
         <p className="text-sm font-medium uppercase tracking-[0.2em] text-olive-dark">
           Customer account
@@ -213,6 +212,7 @@ export default function MyTicketsPage() {
           );
         })}
       </ul>
-    </main>
+      </main>
+    </>
   );
 }

@@ -4,10 +4,10 @@ import {
   bookingHoldMinutes,
   bookingTicketLimitPolicy,
 } from "../bookingPolicy.js";
-import { WORKSHOP_VENUE } from "../data/workshops.js";
 import { getDatabase } from "../firebaseAdmin.js";
 import {
   getRegistrationState,
+  isPublicEvent,
   registrationWindowError,
   serializeEvent,
 } from "./eventService.js";
@@ -57,9 +57,12 @@ export async function getPublishedWorkshops() {
     .where("published", "==", true)
     .get();
   const now = Timestamp.now();
+  const publicDocuments = snapshot.docs.filter((document) =>
+    isPublicEvent(document.data()),
+  );
 
   const workshops = await Promise.all(
-    snapshot.docs.map(async (document) => {
+    publicDocuments.map(async (document) => {
       const workshop = document.data();
       const activeBookings = await Promise.all(
         activeBookingQueries(db, document.id, now).map((query) => query.get()),
@@ -80,12 +83,11 @@ export async function getPublishedWorkshops() {
     a.date.localeCompare(b.date) || (a.number || "").localeCompare(b.number || ""),
   );
 
-  const allWorkshops = await db.collection("workshops").select("date", "published").get();
   const dates = new Map();
-  for (const document of allWorkshops.docs) {
-    const { date, published } = document.data();
+  for (const document of publicDocuments) {
+    const { date } = document.data();
     const entry = dates.get(date) || { date, publishedCount: 0 };
-    if (published) entry.publishedCount += 1;
+    entry.publishedCount += 1;
     dates.set(date, entry);
   }
 
@@ -137,13 +139,17 @@ export async function getWorkshopAvailability(workshopId) {
   });
 }
 
-export async function createReservation({ uid, workshopId, participant }) {
-  const db = getDatabase();
-  const now = Timestamp.now();
+export async function createReservationWithDatabase({
+  db,
+  uid,
+  workshopId,
+  participant,
+  now = Timestamp.now(),
+  bookingId = randomUUID(),
+}) {
   const requestedExpiresAt = Timestamp.fromMillis(
     now.toMillis() + bookingHoldMinutes * 60 * 1000,
   );
-  const bookingId = randomUUID();
   const workshopRef = db.collection("workshops").doc(workshopId);
   const bookingRef = db.collection("bookings").doc(bookingId);
   const limitRef = db
@@ -211,7 +217,8 @@ export async function createReservation({ uid, workshopId, participant }) {
       sessionDate: workshop.date,
       start: workshop.start,
       end: workshop.end,
-      venue: workshop.venue || WORKSHOP_VENUE,
+      venue: workshop.venue ||
+        [workshop.venueName, workshop.venueAddress].filter(Boolean).join(", "),
       amount: workshop.price,
       currency: "INR",
       status: "reserved",
@@ -230,6 +237,7 @@ export async function createReservation({ uid, workshopId, participant }) {
 
     return {
       bookingId,
+      eventId: workshopId,
       workshopId,
       workshopName: workshop.title,
       sessionDate: workshop.date,
@@ -249,10 +257,21 @@ export async function createReservation({ uid, workshopId, participant }) {
   return reservation;
 }
 
-export async function listCustomerBookings(uid) {
-  const db = getDatabase();
+export async function createReservation({ uid, workshopId, participant }) {
+  return createReservationWithDatabase({
+    db: getDatabase(),
+    uid,
+    workshopId,
+    participant,
+  });
+}
+
+export async function listCustomerBookingsWithDatabase({
+  db,
+  uid,
+  now = Timestamp.now(),
+}) {
   const snapshot = await db.collection("bookings").where("customerId", "==", uid).get();
-  const now = Timestamp.now();
   return snapshot.docs
     .map((document) => {
       const booking = document.data();
@@ -270,4 +289,8 @@ export async function listCustomerBookings(uid) {
       };
     })
     .sort((a, b) => (b.createdAt || "").localeCompare(a.createdAt || ""));
+}
+
+export async function listCustomerBookings(uid) {
+  return listCustomerBookingsWithDatabase({ db: getDatabase(), uid });
 }

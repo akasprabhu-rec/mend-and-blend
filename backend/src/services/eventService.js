@@ -1,8 +1,9 @@
 import { randomUUID } from "node:crypto";
 import { Timestamp } from "firebase-admin/firestore";
 import { getDatabase } from "../firebaseAdmin.js";
+import { hasRelevantPaymentRecord } from "./eventDeletionPolicy.js";
 
-const eventStatuses = new Set(["draft", "published", "unpublished", "completed"]);
+const eventStatuses = new Set(["draft", "published", "unpublished", "archived", "completed"]);
 const activeHoldStatuses = new Set(["reserved", "order_creating", "payment_pending"]);
 const istOffset = "+05:30";
 
@@ -27,7 +28,13 @@ function parseLocalDateTime(value, label) {
   return { timestamp: Timestamp.fromDate(parsed), date, time };
 }
 
-export function validateManagedEvent(input, { requireRegistrationWindow = false } = {}) {
+export function validateManagedEvent(
+  input,
+  {
+    requireRegistrationWindow = false,
+    salesPaused = false,
+  } = {},
+) {
   if (!input || typeof input !== "object" || Array.isArray(input)) {
     throw eventError(400, "Event details are required.");
   }
@@ -36,6 +43,7 @@ export function validateManagedEvent(input, { requireRegistrationWindow = false 
     typeof input.shortDescription === "string" ? input.shortDescription.trim() : "";
   const fullDescription =
     typeof input.fullDescription === "string" ? input.fullDescription.trim() : "";
+  const category = typeof input.category === "string" ? input.category.trim() : "";
   const venueName = typeof input.venueName === "string" ? input.venueName.trim() : "";
   const venueAddress =
     typeof input.venueAddress === "string" ? input.venueAddress.trim() : "";
@@ -50,6 +58,9 @@ export function validateManagedEvent(input, { requireRegistrationWindow = false 
   if (!fullDescription || fullDescription.length > 10000) {
     throw eventError(400, "Enter a full event description of at most 10,000 characters.");
   }
+  if (category.length > 80) {
+    throw eventError(400, "Event category must be at most 80 characters.");
+  }
   if (!venueName || venueName.length > 200 || !venueAddress || venueAddress.length > 500) {
     throw eventError(400, "Venue name and address are required.");
   }
@@ -60,7 +71,7 @@ export function validateManagedEvent(input, { requireRegistrationWindow = false 
     throw eventError(400, "Seat capacity must be a whole number between 1 and 100,000.");
   }
   if (!eventStatuses.has(input.status)) {
-    throw eventError(400, "Choose Draft, Published, Unpublished or Completed.");
+    throw eventError(400, "Choose Draft, Published, Unpublished or Archived.");
   }
 
   const eventDate = typeof input.date === "string" && /^\d{4}-\d{2}-\d{2}$/.test(input.date)
@@ -117,6 +128,7 @@ export function validateManagedEvent(input, { requireRegistrationWindow = false 
   const published = input.status === "published";
   return {
     title,
+    category,
     shortDescription,
     fullDescription,
     description: shortDescription,
@@ -136,7 +148,7 @@ export function validateManagedEvent(input, { requireRegistrationWindow = false 
     registrationCloseAt: registrationClose?.timestamp || null,
     status: input.status,
     published,
-    salesPaused: input.salesPaused === true,
+    salesPaused: salesPaused === true,
   };
 }
 
@@ -155,16 +167,16 @@ function isoDate(value) {
 }
 
 function registrationState(event, now, availableSeats) {
+  if (event.status === "archived") return "archived";
   if (event.status === "completed") return "completed";
-  if (!event.published || event.status === "draft" || event.status === "unpublished") {
-    return "unpublished";
-  }
+  if (!isPublicEvent(event)) return "unpublished";
   if (event.registrationClosedManually) return "closed";
   if (event.salesPaused) return "paused";
   const opensAt = timestampMillis(event.registrationOpenAt);
   const closesAt = timestampMillis(event.registrationCloseAt);
-  if (opensAt !== null && now < opensAt) return "not_open";
-  if (closesAt !== null && now >= closesAt) return "closed";
+  if (opensAt === null) return "not_open";
+  if (closesAt === null || closesAt <= opensAt || now >= closesAt) return "closed";
+  if (now < opensAt) return "not_open";
   if (availableSeats <= 0) return "sold_out";
   return "open";
 }
@@ -175,7 +187,7 @@ export function getRegistrationState(event, now = Date.now(), availableSeats = e
 
 export function registrationWindowError(event, now = Date.now()) {
   const state = registrationState(event, now, event.capacity);
-  if (state === "unpublished" || state === "completed") {
+  if (state === "unpublished" || state === "completed" || state === "archived") {
     return eventError(404, "This event is not available for registration.");
   }
   if (state === "paused") return eventError(409, "Ticket sales are temporarily paused.");
@@ -198,6 +210,11 @@ export function serializeEvent(event, now = Date.now(), availableSeats = event.c
     canRegister: registrationStatus === "open",
     registrationClosedManually: event.registrationClosedManually === true,
   };
+}
+
+export function isPublicEvent(event) {
+  return event.published === true &&
+    (event.status == null || event.status === "published");
 }
 
 function istDateTimeInput(millis) {
@@ -246,9 +263,10 @@ export async function listManagedEvents() {
   for (const document of bookingSnapshot.docs) {
     const booking = { id: document.id, ...document.data() };
     bookingById.set(booking.id, booking);
-    const list = bookingsByEvent.get(booking.workshopId) || [];
+    const eventId = booking.workshopId || booking.eventId;
+    const list = bookingsByEvent.get(eventId) || [];
     list.push(booking);
-    bookingsByEvent.set(booking.workshopId, list);
+    bookingsByEvent.set(eventId, list);
   }
   const capturedRevenueByEvent = new Map();
   for (const document of paymentSnapshot.docs) {
@@ -256,9 +274,10 @@ export async function listManagedEvents() {
     if (payment.status !== "captured") continue;
     const booking = bookingById.get(payment.bookingId);
     if (!booking) continue;
+    const eventId = booking.workshopId || booking.eventId;
     capturedRevenueByEvent.set(
-      booking.workshopId,
-      (capturedRevenueByEvent.get(booking.workshopId) || 0) +
+      eventId,
+      (capturedRevenueByEvent.get(eventId) || 0) +
         (payment.amountInSubunits || 0) / 100,
     );
   }
@@ -297,14 +316,15 @@ function to24HourTime(value) {
 }
 
 export async function createManagedEvent(input, actorUid) {
-  const event = validateManagedEvent(input, { requireRegistrationWindow: true });
+  const event = validateManagedEvent(input, {
+    requireRegistrationWindow: true,
+    salesPaused: false,
+  });
   const db = getDatabase();
   const now = Timestamp.now();
   const ref = db.collection("workshops").doc(safeEventId(event.title));
   await ref.create({
     ...event,
-    eventType: "managed_event",
-    number: "EV",
     salesPaused: false,
     registrationClosedManually: false,
     reservationVersion: 0,
@@ -312,21 +332,29 @@ export async function createManagedEvent(input, actorUid) {
     createdAt: now,
     updatedAt: now,
   });
-  return { id: ref.id };
+  return { id: ref.id, status: event.status };
 }
 
 export async function updateManagedEvent(eventId, input, actorUid) {
-  const event = validateManagedEvent(input);
   const db = getDatabase();
   const ref = db.collection("workshops").doc(eventId);
   const now = Timestamp.now();
+  let savedStatus;
   await db.runTransaction(async (transaction) => {
-    const [snapshot, bookingSnapshot] = await Promise.all([
+    const [snapshot, bookingSnapshot, legacyBookingSnapshot] = await Promise.all([
       transaction.get(ref),
       transaction.get(db.collection("bookings").where("workshopId", "==", eventId)),
+      transaction.get(db.collection("bookings").where("eventId", "==", eventId)),
     ]);
     if (!snapshot.exists) throw eventError(404, "Event was not found.");
-    const bookedSeats = bookingSnapshot.docs
+    const event = validateManagedEvent(input, {
+      requireRegistrationWindow: input?.status === "published",
+      salesPaused: snapshot.data().salesPaused === true,
+    });
+    const bookings = new Map(
+      [...bookingSnapshot.docs, ...legacyBookingSnapshot.docs].map((doc) => [doc.id, doc]),
+    );
+    const bookedSeats = [...bookings.values()]
       .map((doc) => doc.data())
       .filter((booking) => isActiveBooking(booking, now.toMillis())).length;
     if (event.capacity < bookedSeats) {
@@ -337,8 +365,9 @@ export async function updateManagedEvent(eventId, input, actorUid) {
       updatedBy: actorUid,
       updatedAt: now,
     });
+    savedStatus = event.status;
   });
-  return { id: eventId };
+  return { id: eventId, status: savedStatus };
 }
 
 export async function duplicateManagedEvent(eventId, actorUid) {
@@ -347,15 +376,17 @@ export async function duplicateManagedEvent(eventId, actorUid) {
   if (!source.exists) throw eventError(404, "Event was not found.");
   const original = source.data();
   const now = Date.now();
+  const legacyVenueParts = (original.venue || "").split(", ");
   const event = {
     title: `${original.title} (copy)`,
+    category: original.category || "",
     shortDescription: original.shortDescription || original.description || "",
     fullDescription: original.fullDescription || original.description || "",
     date: original.date,
     start: to24HourTime(original.start),
     end: to24HourTime(original.end),
-    venueName: original.venueName || "Mend and Blend",
-    venueAddress: original.venueAddress || original.venue || "",
+    venueName: original.venueName || legacyVenueParts[0] || "",
+    venueAddress: original.venueAddress || legacyVenueParts.slice(1).join(", "),
     price: original.price,
     capacity: original.capacity,
     imageUrl: original.imageUrl || "",
@@ -370,35 +401,92 @@ export async function deleteManagedEvent(eventId) {
   const db = getDatabase();
   const ref = db.collection("workshops").doc(eventId);
   await db.runTransaction(async (transaction) => {
-    const [eventSnapshot, bookingSnapshot] = await Promise.all([
+    const [eventSnapshot, bookingSnapshot, legacyBookingSnapshot] = await Promise.all([
       transaction.get(ref),
       transaction.get(db.collection("bookings").where("workshopId", "==", eventId)),
+      transaction.get(db.collection("bookings").where("eventId", "==", eventId)),
     ]);
     if (!eventSnapshot.exists) throw eventError(404, "Event was not found.");
-    if (eventSnapshot.data().eventType !== "managed_event") {
-      throw eventError(409, "The original Mend and Blend workshop sessions are protected from deletion.");
-    }
-    const bookingDocs = bookingSnapshot.docs;
+    const bookingDocsById = new Map(
+      [...bookingSnapshot.docs, ...legacyBookingSnapshot.docs].map((doc) => [doc.id, doc]),
+    );
+    const bookingDocs = [...bookingDocsById.values()];
     if (bookingDocs.some((doc) => doc.data().status === "confirmed")) {
       throw eventError(409, "This event has confirmed registrations and cannot be deleted.");
     }
 
+    const bookingsById = new Map(bookingDocs.map((doc) => [doc.id, doc.data()]));
+    const bookingIds = [...bookingsById.keys()];
+    const paymentQueries = [];
+    for (let index = 0; index < bookingIds.length; index += 30) {
+      paymentQueries.push(
+        db.collection("payments").where(
+          "bookingId",
+          "in",
+          bookingIds.slice(index, index + 30),
+        ),
+      );
+    }
     const paymentRefs = bookingDocs
       .map((doc) => doc.data().razorpayOrderId)
       .filter(Boolean)
       .map((orderId) => db.collection("payments").doc(orderId));
-    const payments = paymentRefs.length
-      ? await transaction.getAll(...paymentRefs)
-      : [];
-    if (payments.some((payment) => payment.exists)) {
+    const [paymentQuerySnapshots, directPaymentSnapshots] = await Promise.all([
+      Promise.all(paymentQueries.map((query) => transaction.get(query))),
+      paymentRefs.length ? transaction.getAll(...paymentRefs) : Promise.resolve([]),
+    ]);
+    const paymentDocuments = new Map();
+    for (const snapshot of paymentQuerySnapshots) {
+      for (const document of snapshot.docs) paymentDocuments.set(document.id, document);
+    }
+    for (const document of directPaymentSnapshots) {
+      if (document.exists) paymentDocuments.set(document.id, document);
+    }
+    const now = Date.now();
+    if ([...paymentDocuments.values()].some((payment) => {
+      const data = payment.data();
+      return hasRelevantPaymentRecord(data, bookingsById.get(data.bookingId), now);
+    })) {
       throw eventError(409, "This event has payment records and cannot be deleted.");
     }
-    if (bookingDocs.some((doc) => isActiveBooking(doc.data(), Date.now()))) {
+    if (bookingDocs.some((doc) => isActiveBooking(doc.data(), now))) {
       throw eventError(409, "This event has active seat reservations and cannot be deleted yet.");
     }
     transaction.delete(ref);
   });
   return { id: eventId, deleted: true };
+}
+
+export async function setManagedEventStatus(eventId, status) {
+  if (!eventStatuses.has(status) || status === "completed") {
+    throw eventError(400, "Choose Draft, Published, Unpublished or Archived.");
+  }
+  const db = getDatabase();
+  const ref = db.collection("workshops").doc(eventId);
+  const now = Timestamp.now();
+  const updated = await db.runTransaction(async (transaction) => {
+    const snapshot = await transaction.get(ref);
+    if (!snapshot.exists) return false;
+    if (status === "published") {
+      const event = snapshot.data();
+      const opensAt = timestampMillis(event.registrationOpenAt);
+      const closesAt = timestampMillis(event.registrationCloseAt);
+      if (opensAt === null || closesAt === null || closesAt <= opensAt) {
+        throw eventError(409, "Set a valid registration opening and closing window before publishing.");
+      }
+      if (!Number.isSafeInteger(event.capacity) || event.capacity < 1) {
+        throw eventError(409, "Set a valid seat capacity before publishing.");
+      }
+    }
+    transaction.update(ref, {
+      status,
+      published: status === "published",
+      updatedAt: now,
+    });
+    return true;
+  });
+  if (!updated) throw eventError(404, "Event was not found.");
+  return { id: eventId, status, published: status === "published" };
 }
 
 export async function setEventSalesPaused(eventId, paused) {
@@ -427,12 +515,16 @@ export async function setEventRegistrationState(eventId, action) {
     const snapshot = await transaction.get(ref);
     if (!snapshot.exists) throw eventError(404, "Event was not found.");
     const event = snapshot.data();
-    if (!event.published || event.status === "completed") {
+    if (!isPublicEvent(event)) {
       throw eventError(409, "Publish this event before opening registrations.");
     }
     if (action === "open") {
+      const opensAt = timestampMillis(event.registrationOpenAt);
       const closesAt = timestampMillis(event.registrationCloseAt);
-      if (closesAt !== null && closesAt <= now.toMillis()) {
+      if (opensAt === null || closesAt === null || closesAt <= opensAt) {
+        throw eventError(409, "Set a valid registration opening and closing window before opening registrations.");
+      }
+      if (closesAt <= now.toMillis()) {
         throw eventError(409, "The registration deadline has passed. Change the deadline before reopening registrations.");
       }
       transaction.update(ref, {

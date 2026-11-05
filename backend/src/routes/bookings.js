@@ -35,18 +35,18 @@ router.get("/mine", requireFirebaseUser, async (req, res) => {
 });
 
 router.post("/reservations", requireFirebaseUser, async (req, res) => {
-  const { workshopId } = req.body ?? {};
+  const eventId = req.body?.eventId ?? req.body?.workshopId;
   if (
-    typeof workshopId !== "string" ||
-    workshopId.length > 120 ||
-    !/^[a-zA-Z0-9_-]+$/.test(workshopId)
+    typeof eventId !== "string" ||
+    eventId.length > 120 ||
+    !/^[a-zA-Z0-9_-]+$/.test(eventId)
   ) {
-    throw new BookingError(400, "A valid workshop session is required.");
+    throw new BookingError(400, "A valid event is required.");
   }
 
   const reservation = await createReservation({
     uid: req.firebaseUser.uid,
-    workshopId,
+    workshopId: eventId,
     participant: validateParticipant(req.body.participant),
   });
   res.status(201).json(reservation);

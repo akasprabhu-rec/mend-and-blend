@@ -1,6 +1,6 @@
 import Section from "./ui/Section.jsx";
 import Reveal from "./ui/Reveal.jsx";
-import FaceLine from "./ui/FaceLine.jsx";
+import logo from "../assets/logo.jpg";
 
 const VALUES = [
   { title: "Self-discovery", text: "Notice what you need, what you carry and what you're ready to let go of." },
@@ -18,10 +18,12 @@ export default function About() {
       intro="Our workshops invite you to explore the mind with curiosity instead of pressure. To mend is to tend to yourself with care. To blend is to bring all your parts, and the people around you, into the same room."
     >
       <div className="grid items-center gap-12 md:grid-cols-5">
-        <Reveal className="relative mx-auto aspect-[4/3] w-full max-w-md md:col-span-2">
-          <div className="absolute inset-0 rounded-[48%_52%_44%_56%/52%_46%_54%_48%] bg-lavender/25" />
-          <FaceLine className="absolute left-[2%] top-[8%] h-4/5 w-1/2 text-lavender-dark" />
-          <FaceLine flip className="absolute right-[2%] top-[8%] h-4/5 w-1/2 text-charcoal" />
+        <Reveal className="mx-auto aspect-square w-full max-w-sm md:col-span-2">
+          <img
+            src={logo}
+            alt="Mend and Blend logo"
+            className="h-full w-full object-contain"
+          />
         </Reveal>
 
         <ul className="grid gap-5 sm:grid-cols-2 md:col-span-3">

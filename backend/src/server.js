@@ -43,6 +43,7 @@ app.use(express.json());
 
 // Routes
 app.use("/api/health", healthRouter);
+app.use("/api/events", workshopsRouter);
 app.use("/api/workshops", workshopsRouter);
 app.use("/api/bookings", bookingsRouter);
 app.use("/api/admin", adminRouter);
@@ -54,7 +55,7 @@ app.use((req, res) => {
 
 app.use((error, req, res, next) => {
   if (res.headersSent) return next(error);
-  if (Number.isInteger(error.status) && error.status >= 400 && error.status < 500) {
+  if (Number.isInteger(error.status) && error.status >= 400 && error.status < 600) {
     return res.status(error.status).json({ error: error.message });
   }
   if (

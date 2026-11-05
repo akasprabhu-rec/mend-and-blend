@@ -1,5 +1,4 @@
 import { Router } from "express";
-import { Timestamp } from "firebase-admin/firestore";
 import {
   getAdminRole,
   requireAdmin,
@@ -11,7 +10,6 @@ import {
   classifyFirebaseAdminError,
   logFirebaseAdminError,
 } from "../firebaseAdminDiagnostics.js";
-import { INITIAL_WORKSHOPS } from "../data/workshops.js";
 import { getAdminDashboard, redeemTicket } from "../services/adminService.js";
 import {
   addAdministrator,
@@ -24,6 +22,7 @@ import {
   deleteManagedEvent,
   duplicateManagedEvent,
   listManagedEvents,
+  setManagedEventStatus,
   setEventRegistrationState,
   setEventSalesPaused,
   updateManagedEvent,
@@ -99,6 +98,17 @@ router.patch(
         req.body,
         req.firebaseUser.uid,
       ),
+    );
+  },
+);
+
+router.patch(
+  "/events/:eventId/status",
+  requireFirebaseUser,
+  requireAdmin,
+  async (req, res) => {
+    return res.json(
+      await setManagedEventStatus(req.params.eventId, req.body?.status),
     );
   },
 );
@@ -188,72 +198,5 @@ router.post("/tickets/redeem", requireFirebaseUser, requireAdmin, async (req, re
   }
   return res.json(await redeemTicket(qrToken, req.firebaseUser.uid));
 });
-
-router.get("/workshops", requireFirebaseUser, requireAdmin, async (req, res) => {
-  const snapshot = await getDatabase().collection("workshops").get();
-  const workshops = snapshot.docs
-    .map((document) => ({ id: document.id, ...document.data() }))
-    .sort((a, b) => a.date.localeCompare(b.date) || a.number.localeCompare(b.number));
-  res.json({ workshops });
-});
-
-router.post("/workshops/seed", requireFirebaseUser, requireAdmin, async (req, res) => {
-  const db = getDatabase();
-  const now = Timestamp.now();
-  const result = await db.runTransaction(async (transaction) => {
-    const references = INITIAL_WORKSHOPS.map((workshop) =>
-      db.collection("workshops").doc(workshop.id),
-    );
-    const snapshots = await transaction.getAll(...references);
-    const created = [];
-
-    snapshots.forEach((snapshot, index) => {
-      if (!snapshot.exists) {
-        transaction.create(references[index], {
-          ...INITIAL_WORKSHOPS[index],
-          createdAt: now,
-          updatedAt: now,
-          reservationVersion: 0,
-        });
-        created.push(INITIAL_WORKSHOPS[index].id);
-      }
-    });
-
-    return created;
-  });
-  res.json({
-    created: result,
-    message:
-      result.length === 0
-        ? "The six workshop sessions already exist; their publication settings were not changed."
-        : "Missing workshop sessions were initialized. December 20 sessions remain unpublished.",
-  });
-});
-
-router.patch(
-  "/workshops/:workshopId/publication",
-  requireFirebaseUser,
-  requireAdmin,
-  async (req, res) => {
-    if (typeof req.body?.published !== "boolean") {
-      return res.status(400).json({ error: "published must be a boolean." });
-    }
-    const { workshopId } = req.params;
-    const db = getDatabase();
-    const workshopRef = db.collection("workshops").doc(workshopId);
-    const updated = await db.runTransaction(async (transaction) => {
-      const snapshot = await transaction.get(workshopRef);
-      if (!snapshot.exists) return false;
-      transaction.update(workshopRef, {
-        published: req.body.published,
-        status: req.body.published ? "published" : "unpublished",
-        updatedAt: Timestamp.now(),
-      });
-      return true;
-    });
-    if (!updated) return res.status(404).json({ error: "Workshop session not found." });
-    return res.json({ id: workshopId, published: req.body.published });
-  },
-);
 
 export default router;

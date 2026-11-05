@@ -1,5 +1,5 @@
 import Button from "./ui/Button.jsx";
-import FaceLine from "./ui/FaceLine.jsx";
+import logo from "../assets/logo.jpg";
 
 export default function Hero() {
   return (
@@ -23,15 +23,15 @@ export default function Hero() {
             <Button href="#about" variant="secondary">Our story</Button>
           </div>
           <p className="mt-8 text-sm text-charcoal/70">
-            Next workshop day: 12 December 2026 · Nungambakkam, Chennai
+            Explore upcoming events and workshops below.
           </p>
         </div>
 
-        <div className="relative mx-auto aspect-square w-full max-w-md">
-          <div className="absolute inset-0 animate-float rounded-[58%_42%_47%_53%/46%_55%_45%_54%] bg-sage/50" />
-          <div className="absolute inset-8 animate-float rounded-[44%_56%_52%_48%/55%_45%_55%_45%] bg-rose/40 [animation-delay:-4s]" />
-          <FaceLine className="absolute inset-0 h-full w-full p-10 text-charcoal" />
-        </div>
+        <img
+          src={logo}
+          alt="Mend and Blend logo, featuring two helping hands within an arch"
+          className="mx-auto aspect-square w-full max-w-md object-contain"
+        />
       </div>
     </section>
   );

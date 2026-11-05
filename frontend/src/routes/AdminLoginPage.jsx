@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../auth/AuthContext.jsx";
 import { bookingApi } from "../booking/api.js";
@@ -9,6 +9,7 @@ export default function AdminLoginPage() {
   const [checking, setChecking] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
+  const submittingRef = useRef(false);
 
   useEffect(() => {
     if (!user || loading) return undefined;
@@ -47,6 +48,8 @@ export default function AdminLoginPage() {
   }
 
   async function handleSignIn() {
+    if (submittingRef.current) return;
+    submittingRef.current = true;
     setError("");
     setSubmitting(true);
     try {
@@ -61,6 +64,7 @@ export default function AdminLoginPage() {
           : signInError.message || "Could not sign in to the admin dashboard.",
       );
     } finally {
+      submittingRef.current = false;
       setSubmitting(false);
     }
   }
@@ -90,7 +94,12 @@ export default function AdminLoginPage() {
           disabled={submitting}
           className="mt-8 w-full rounded-full bg-brand-blue px-6 py-3 font-medium text-white transition-colors hover:bg-brand-blue/90 disabled:cursor-not-allowed disabled:opacity-50"
         >
-          {submitting ? "Verifying account…" : "Continue with Google"}
+          {submitting ? (
+            <span className="inline-flex items-center gap-3">
+              <span className="loading-spinner" aria-hidden="true" />
+              Verifying account…
+            </span>
+          ) : "Continue with Google"}
         </button>
       </section>
     </main>

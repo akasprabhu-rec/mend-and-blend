@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../auth/AuthContext.jsx";
 import { bookingApi, formatWorkshopDate } from "../booking/api.js";
@@ -14,49 +14,82 @@ export default function Workshops() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const { user, loading: authLoading } = useAuth();
+  const requestInFlight = useRef(false);
 
-  async function loadWorkshops() {
-    setLoading(true);
+  const loadWorkshops = useCallback(async ({ quiet = false } = {}) => {
+    if (requestInFlight.current) return;
+    requestInFlight.current = true;
+    if (!quiet) setLoading(true);
     setError("");
     try {
-      const result = await bookingApi("/workshops");
+      const result = await bookingApi("/events");
       setWorkshops(result.workshops);
       setDates(result.dates);
     } catch (loadError) {
-      setError(loadError.message || "Could not load workshop sessions.");
+      setError(loadError.message || "Could not load events.");
     } finally {
-      setLoading(false);
+      requestInFlight.current = false;
+      if (!quiet) setLoading(false);
     }
-  }
-
-  useEffect(() => {
-    loadWorkshops();
   }, []);
 
   useEffect(() => {
+    void loadWorkshops();
+    let refreshTimer;
+    const scheduleRefresh = () => {
+      if (document.visibilityState === "hidden" || refreshTimer) return;
+      refreshTimer = window.setTimeout(() => {
+        refreshTimer = undefined;
+        void loadWorkshops({ quiet: true });
+      }, 50);
+    };
+    const handlePageShow = (event) => {
+      if (event.persisted) scheduleRefresh();
+    };
+    const handleHashChange = () => {
+      if (window.location.hash === "#workshops") scheduleRefresh();
+    };
+
+    document.addEventListener("visibilitychange", scheduleRefresh);
+    window.addEventListener("focus", scheduleRefresh);
+    window.addEventListener("pageshow", handlePageShow);
+    window.addEventListener("hashchange", handleHashChange);
+    return () => {
+      document.removeEventListener("visibilitychange", scheduleRefresh);
+      window.removeEventListener("focus", scheduleRefresh);
+      window.removeEventListener("pageshow", handlePageShow);
+      window.removeEventListener("hashchange", handleHashChange);
+      if (refreshTimer) window.clearTimeout(refreshTimer);
+    };
+  }, [loadWorkshops]);
+
+  useEffect(() => {
     if (!user || authLoading || workshops.length === 0) return;
-    const pendingWorkshopId = sessionStorage.getItem("pendingWorkshopId");
+    const pendingWorkshopId =
+      sessionStorage.getItem("pendingEventId") ||
+      sessionStorage.getItem("pendingWorkshopId");
     const pendingWorkshop = workshops.find((workshop) => workshop.id === pendingWorkshopId);
     if (pendingWorkshop) {
       setSelected(pendingWorkshop);
+      sessionStorage.removeItem("pendingEventId");
       sessionStorage.removeItem("pendingWorkshopId");
     }
   }, [user, authLoading, workshops]);
 
   function register(workshop) {
-    if (!user) sessionStorage.setItem("pendingWorkshopId", workshop.id);
+    if (!user) sessionStorage.setItem("pendingEventId", workshop.id);
     setSelected(workshop);
   }
 
   return (
     <Section
       id="workshops"
-      eyebrow="Workshops"
-      title="Sessions for turning inward"
-      intro="Choose from our published 90-minute workshops, each with its own focus and price. Come with curiosity. There's nothing to prepare and nothing to perform."
+      eyebrow="Events"
+      title="Gather, explore and grow"
+      intro="Explore our published events and workshops. Each gathering offers a welcoming space for curiosity, connection and self-discovery."
       className="bg-sage/25"
     >
-      <ul aria-label="Workshop dates" className="mb-10 flex flex-wrap gap-3">
+      <ul aria-label="Event dates" className="mb-10 flex flex-wrap gap-3">
         {dates.map((d) => (
           <li
             key={d.date}
@@ -67,12 +100,12 @@ export default function Workshops() {
             }`}
           >
             {formatWorkshopDate(d.date)}
-            {d.publishedCount === 0 && " · sessions announced soon"}
+            {d.publishedCount === 0 && " · events announced soon"}
           </li>
         ))}
       </ul>
 
-      {loading && <p role="status">Loading available sessions…</p>}
+      {loading && <p role="status">Loading available events…</p>}
       {error && (
         <div className="mb-6 rounded-2xl border border-rose p-4" role="alert">
           <p>{error}</p>
@@ -82,13 +115,13 @@ export default function Workshops() {
             onClick={loadWorkshops}
             disabled={loading}
           >
-            Retry loading workshops
+            Retry loading events
           </button>
         </div>
       )}
       {!loading && !error && workshops.length === 0 && (
         <p className="rounded-2xl bg-white/70 p-6">
-          No sessions are currently published. Please check back soon.
+          No events are currently published. Please check back soon.
         </p>
       )}
 

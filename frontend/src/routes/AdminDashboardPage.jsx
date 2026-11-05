@@ -1,9 +1,10 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { useAuth } from "../auth/AuthContext.jsx";
 import AdminTicketScanner from "../components/admin/AdminTicketScanner.jsx";
 import AdminEventsSection from "../components/admin/AdminEventsSection.jsx";
 import AdminAdminsSection from "../components/admin/AdminAdminsSection.jsx";
+import Navbar from "../components/Navbar.jsx";
 import { bookingApi, formatWorkshopDate } from "../booking/api.js";
 import { formatINR } from "../data/siteData.js";
 
@@ -28,7 +29,7 @@ function exportRegistrations(registrations) {
     "Customer name",
     "Email",
     "Phone",
-    "Workshop",
+    "Event",
     "Session date",
     "Start time",
     "End time",
@@ -73,18 +74,15 @@ function Metric({ label, value, note }) {
 }
 
 export default function AdminDashboardPage() {
-  const { user, signOut } = useAuth();
-  const navigate = useNavigate();
+  const { user } = useAuth();
   const [dashboard, setDashboard] = useState({
     summary: initialSummary,
-    workshops: [],
+    events: [],
     registrations: [],
   });
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
-  const [busy, setBusy] = useState("");
   const [error, setError] = useState("");
-  const [message, setMessage] = useState("");
   const [scanToken, setScanToken] = useState("");
   const [scanResult, setScanResult] = useState(null);
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
@@ -127,54 +125,13 @@ export default function AdminDashboardPage() {
     ),
     [dashboard.registrations, registrationFilters],
   );
-  const originalWorkshops = useMemo(
-    () => dashboard.workshops.filter((workshop) => workshop.eventType !== "managed_event"),
-    [dashboard.workshops],
-  );
   const dashboardSections = [
     ["overview", "Overview"],
-    ["workshop-sessions", "Workshop sessions"],
     ["manage-events", "Manage events"],
     ["registrations", "Registrations"],
     ["ticket-scanner", "Ticket scanner"],
     ...(dashboard.adminRole === "super_admin" ? [["manage-admins", "Manage admins"]] : []),
   ];
-
-  async function setPublished(workshop, published) {
-    setBusy(workshop.id);
-    setError("");
-    setMessage("");
-    try {
-      await bookingApi(`/admin/workshops/${encodeURIComponent(workshop.id)}/publication`, user, {
-        method: "PATCH",
-        body: JSON.stringify({ published }),
-      });
-      setMessage(
-        `${workshop.title} on ${formatWorkshopDate(workshop.date)} is now ${
-          published ? "published" : "unpublished"
-        }.`,
-      );
-      await loadDashboard();
-    } catch (updateError) {
-      setError(updateError.message || "Could not update publication status.");
-    } finally {
-      setBusy("");
-    }
-  }
-
-  async function seedWorkshops() {
-    setBusy("seed");
-    setError("");
-    try {
-      const result = await bookingApi("/admin/workshops/seed", user, { method: "POST" });
-      setMessage(result.message);
-      await loadDashboard();
-    } catch (seedError) {
-      setError(seedError.message || "Could not initialize workshop sessions.");
-    } finally {
-      setBusy("");
-    }
-  }
 
   const redeemScannedTicket = useCallback(async (qrToken) => {
     setScanToken(qrToken);
@@ -199,42 +156,24 @@ export default function AdminDashboardPage() {
     await redeemScannedTicket(scanToken.trim());
   }
 
-  async function handleSignOut() {
-    try {
-      await signOut();
-      navigate("/admin/login", { replace: true });
-    } catch (signOutError) {
-      setError(signOutError.message || "Could not sign out.");
-    }
-  }
-
   return (
-    <main className="mx-auto min-h-screen max-w-7xl px-6 py-10 sm:py-14">
-      <header className="flex min-w-0 flex-wrap items-start justify-between gap-5">
+    <>
+      <Navbar />
+      <main className="mx-auto min-h-screen max-w-7xl px-6 py-10 sm:py-14">
+        <header className="flex min-w-0 flex-wrap items-start justify-between gap-5">
         <div className="min-w-0">
-          <Link to="/" className="text-sm font-medium text-olive-dark hover:underline">
-            ← Mend and Blend
-          </Link>
           <p className="mt-7 text-sm font-medium uppercase tracking-[0.2em] text-olive-dark">
             Administrator dashboard
           </p>
-          <h1 className="mt-2 break-words text-3xl font-medium sm:text-5xl">Workshop operations</h1>
+          <h1 className="mt-2 break-words text-3xl font-medium sm:text-5xl">Event operations</h1>
           <p className="mt-3 break-words text-sm text-charcoal/70">
             Signed in as {user.email || user.displayName}. Payments are verified automatically;
             administrators cannot change payment status.
           </p>
         </div>
-        <button
-          type="button"
-          onClick={handleSignOut}
-          className="rounded-full border border-charcoal/40 px-5 py-2 text-sm font-medium hover:bg-charcoal hover:text-ivory"
-        >
-          Sign out
-        </button>
       </header>
 
       {error && <p className="mt-6 rounded-2xl border border-rose bg-white/80 p-4" role="alert">{error}</p>}
-      {message && <p className="mt-6 rounded-2xl bg-brand-blue/10 p-4 text-brand-blue" role="status">{message}</p>}
 
       <nav aria-label="Admin dashboard sections" className="sticky top-0 z-10 mt-7 rounded-2xl border border-white/15 bg-brand-blue p-3 text-white shadow-sm">
         <div className="flex items-center justify-between md:hidden">
@@ -297,66 +236,7 @@ export default function AdminDashboardPage() {
         <Metric label="Booked seats" value={dashboard.summary.bookedSeats} note="Confirmed plus active holds" />
         <Metric label="Available seats" value={dashboard.summary.availableSeats} note="Across all events" />
         <Metric label="Active events" value={dashboard.summary.activeEvents} note="Published events" />
-        <Metric label="Unpublished events" value={dashboard.summary.unpublishedEvents} note="Draft and unpublished" />
-      </section>
-
-      <section id="workshop-sessions" className="mt-12 scroll-mt-24">
-        <div className="flex flex-wrap items-end justify-between gap-4">
-          <div className="min-w-0">
-            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-olive-dark">Schedule</p>
-            <h2 className="mt-2 text-3xl font-medium">Workshop sessions</h2>
-          </div>
-          <p className="max-w-xl text-sm text-charcoal/70">
-            These are the original six Mend and Blend sessions. The event manager below handles
-            future events without changing these records.
-          </p>
-        </div>
-        {originalWorkshops.length === 0 && !loading && (
-          <div className="mt-5 rounded-[1.5rem] bg-white/80 p-6">
-            <p>No sessions are initialized yet.</p>
-            <button
-              type="button"
-              onClick={seedWorkshops}
-              disabled={busy !== ""}
-              className="mt-4 rounded-full bg-brand-blue px-5 py-3 text-sm font-medium text-white disabled:opacity-50"
-            >
-              {busy === "seed" ? "Initializing…" : "Initialize six sessions"}
-            </button>
-          </div>
-        )}
-        {loading && <p className="mt-5" role="status">Refreshing dashboard…</p>}
-        <div className="mt-5 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
-          {originalWorkshops.map((workshop) => (
-            <article key={workshop.id} className="rounded-[1.75rem] border border-rose/25 bg-white/80 p-6 shadow-sm">
-              <div className="flex items-start justify-between gap-3">
-                <div>
-                  <p className="text-xs font-semibold uppercase tracking-[0.16em] text-olive-dark">
-                    Session {workshop.number}
-                  </p>
-                  <h3 className="mt-2 break-words text-2xl font-medium">{workshop.title}</h3>
-                </div>
-                <span className={`rounded-full px-3 py-1 text-xs font-semibold ${workshop.published ? "bg-brand-blue text-white" : "bg-ivory text-charcoal/70"}`}>
-                  {workshop.published ? "Published" : "Unpublished"}
-                </span>
-              </div>
-              <p className="mt-4 text-sm">{formatWorkshopDate(workshop.date)}</p>
-              <p className="mt-1 text-sm text-charcoal/70">{workshop.start}–{workshop.end}</p>
-              <dl className="mt-5 grid grid-cols-3 gap-3 border-t border-charcoal/10 pt-4 text-sm">
-                <div><dt className="text-xs text-charcoal/60">Capacity</dt><dd className="mt-1 font-semibold">{workshop.capacity}</dd></div>
-                <div><dt className="text-xs text-charcoal/60">Available</dt><dd className="mt-1 font-semibold">{workshop.availableSeats}</dd></div>
-                <div><dt className="text-xs text-charcoal/60">Registered</dt><dd className="mt-1 font-semibold">{workshop.registrationCount}</dd></div>
-              </dl>
-              <button
-                type="button"
-                disabled={busy !== ""}
-                onClick={() => setPublished(workshop, !workshop.published)}
-                className="mt-5 rounded-full border border-charcoal/40 px-5 py-2 text-sm font-medium hover:bg-charcoal hover:text-ivory disabled:cursor-not-allowed disabled:opacity-50"
-              >
-                {busy === workshop.id ? "Saving…" : workshop.published ? "Unpublish session" : "Publish session"}
-              </button>
-            </article>
-          ))}
-        </div>
+        <Metric label="Unpublished events" value={dashboard.summary.unpublishedEvents} note="Draft, unpublished, and archived" />
       </section>
 
       <AdminEventsSection user={user} />
@@ -382,7 +262,7 @@ export default function AdminDashboardPage() {
             type="search"
             value={search}
             onChange={(event) => setSearch(event.target.value)}
-            placeholder="Search name, email, phone, session, or status"
+            placeholder="Search name, email, phone, event, or status"
             className="w-full rounded-2xl border border-charcoal/20 bg-white/80 px-4 py-3 text-sm"
           />
         </label>
@@ -390,7 +270,7 @@ export default function AdminDashboardPage() {
           <label className="text-sm">Event
             <select value={registrationFilters.eventId} onChange={(event) => setRegistrationFilters((current) => ({ ...current, eventId: event.target.value }))} className="mt-1 w-full rounded-xl border border-charcoal/20 bg-white/80 px-3 py-2">
               <option value="all">All events</option>
-              {dashboard.workshops.map((workshop) => <option key={workshop.id} value={workshop.id}>{workshop.title} · {workshop.date}</option>)}
+              {dashboard.events.map((event) => <option key={event.id} value={event.id}>{event.title} · {event.date}</option>)}
             </select>
           </label>
           <label className="text-sm">Event date
@@ -440,7 +320,7 @@ export default function AdminDashboardPage() {
             <thead className="bg-ivory/80 text-xs uppercase tracking-wide text-charcoal/70">
               <tr>
                 <th className="px-4 py-3">Customer</th>
-                <th className="px-4 py-3">Workshop</th>
+                <th className="px-4 py-3">Event</th>
                 <th className="px-4 py-3">Booking</th>
                 <th className="px-4 py-3">Payment</th>
                 <th className="px-4 py-3">Ticket</th>
@@ -562,6 +442,7 @@ export default function AdminDashboardPage() {
           </section>
         </div>
       )}
-    </main>
+      </main>
+    </>
   );
 }

@@ -1,8 +1,12 @@
 import { Timestamp } from "firebase-admin/firestore";
 import { getDatabase } from "../firebaseAdmin.js";
-import { serializeEvent } from "./eventService.js";
+import { isPublicEvent, serializeEvent } from "./eventService.js";
 
 const activeBookingStatuses = ["reserved", "order_creating", "payment_pending"];
+
+function bookingEventId(booking) {
+  return booking.workshopId || booking.eventId;
+}
 
 function isActiveHold(booking, now) {
   return (
@@ -55,17 +59,19 @@ export async function getAdminDashboard(searchTerm = "") {
     const payment = paymentDocument.data();
     const booking = bookingsById.get(payment.bookingId);
     if (payment.status === "captured" && booking) {
+      const eventId = bookingEventId(booking);
       revenueByWorkshop.set(
-        booking.workshopId,
-        (revenueByWorkshop.get(booking.workshopId) || 0) +
+        eventId,
+        (revenueByWorkshop.get(eventId) || 0) +
           (payment.amountInSubunits || 0) / 100,
       );
     }
   }
   for (const booking of bookings) {
-    const workshopBookings = bookingsByWorkshop.get(booking.workshopId) || [];
+    const eventId = bookingEventId(booking);
+    const workshopBookings = bookingsByWorkshop.get(eventId) || [];
     workshopBookings.push(booking);
-    bookingsByWorkshop.set(booking.workshopId, workshopBookings);
+    bookingsByWorkshop.set(eventId, workshopBookings);
   }
 
   const workshopSummaries = workshops
@@ -88,7 +94,7 @@ export async function getAdminDashboard(searchTerm = "") {
         revenue: revenueByWorkshop.get(workshop.id) || 0,
       };
     })
-    .sort((a, b) => a.date.localeCompare(b.date) || (a.number || "").localeCompare(b.number || ""));
+    .sort((a, b) => a.date.localeCompare(b.date) || a.title.localeCompare(b.title));
 
   const registrations = bookings
     .map((booking) => {
@@ -100,7 +106,7 @@ export async function getAdminDashboard(searchTerm = "") {
         customerName: booking.participant?.fullName || "",
         email: booking.participant?.email || "",
         phone: booking.participant?.phone || "",
-        workshopId: booking.workshopId,
+        workshopId: bookingEventId(booking),
         workshopName: booking.workshopName || "",
         sessionDate: booking.sessionDate || "",
         start: booking.start || "",
@@ -150,14 +156,12 @@ export async function getAdminDashboard(searchTerm = "") {
         (total, workshop) => total + workshop.bookedSeats,
         0,
       ),
-      activeEvents: workshopSummaries.filter(
-        (workshop) => workshop.published && workshop.status !== "completed",
-      ).length,
+      activeEvents: workshopSummaries.filter(isPublicEvent).length,
       unpublishedEvents: workshopSummaries.filter(
-        (workshop) => !workshop.published && workshop.status !== "completed",
+        (workshop) => !isPublicEvent(workshop) && workshop.status !== "completed",
       ).length,
     },
-    workshops: workshopSummaries,
+    events: workshopSummaries,
     registrations: filteredRegistrations,
   };
 }
@@ -207,7 +211,7 @@ export async function redeemTicket(qrToken, adminUid) {
       ticket.isValid === true &&
       ticket.customerId === booking.customerId &&
       ticket.bookingId === bookingSnapshot.id &&
-      ticket.workshopId === booking.workshopId &&
+      ticket.workshopId === bookingEventId(booking) &&
       booking.status === "confirmed" &&
       Boolean(paymentSnapshot?.exists) &&
       paymentSnapshot.data().status === "captured" &&

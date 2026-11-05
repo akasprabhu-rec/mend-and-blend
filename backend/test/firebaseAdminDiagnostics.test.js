@@ -22,3 +22,12 @@ test("identifies the read-only Firestore role needed for permission failures", (
   assert.match(result.message, /roles\/datastore\.viewer/);
   assert.match(result.message, /datastore\.entities\.list/);
 });
+
+test("identifies a Firebase Auth revocation-check permission failure without disabling checks", () => {
+  const result = classifyFirebaseAdminError({
+    code: "auth/insufficient-permission",
+  });
+  assert.equal(result.category, "firebase-auth-permission-denied");
+  assert.match(result.message, /revocation could not be checked/);
+  assert.match(result.message, /do not disable revocation checking/i);
+});

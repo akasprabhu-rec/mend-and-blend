@@ -4,11 +4,12 @@ import { createTicketRecord } from "../src/tickets/ticketRecord.js";
 
 function createBooking() {
   return {
-    workshopId: "roots-to-reach-2026-12-12",
-    workshopName: "Roots to Reach",
-    sessionDate: "2026-12-12",
-    start: "11:00 AM",
-    end: "12:30 PM",
+    workshopId: "dynamic-event-id",
+    workshopName: "Example Event",
+    sessionDate: "2030-01-15",
+    start: "10:00",
+    end: "11:00",
+    venue: "Example Venue, 1 Example Street",
     participant: {
       fullName: "Example Customer",
       email: "customer@example.com",
@@ -46,11 +47,11 @@ test("ticket records contain no payment credentials or participant contact data"
 
   assert.equal(ticket.bookingId, "booking-one");
   assert.equal(ticket.customerId, "firebase-uid-one");
-  assert.equal(ticket.workshopId, "roots-to-reach-2026-12-12");
+  assert.equal(ticket.workshopId, "dynamic-event-id");
   assert.equal(ticket.status, "valid");
   assert.equal(ticket.isValid, true);
   assert.equal(ticket.customerName, "Example Customer");
-  assert.equal(ticket.venue, "01 Appu Street, 34, Valluvar Kottam High Rd, Nungambakkam, Chennai, Tamil Nadu 600034");
+  assert.equal(ticket.venue, "Example Venue, 1 Example Street");
   assert.equal("email" in ticket, false);
   assert.equal("phone" in ticket, false);
   assert.equal("razorpayOrderId" in ticket, false);

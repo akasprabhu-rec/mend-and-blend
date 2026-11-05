@@ -1,12 +1,14 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { bookingApi, formatWorkshopDate } from "../booking/api.js";
+import { validateCheckoutOrder } from "../booking/checkoutOrder.js";
 import { loadRazorpayCheckout } from "../booking/razorpay.js";
 import { formatINR } from "../data/siteData.js";
 import Button from "./ui/Button.jsx";
 
 export default function RegisterDialog({ workshop, user, onClose, onReserved }) {
   const ref = useRef(null);
+  const checkoutDialogCloseRef = useRef(false);
   const [participant, setParticipant] = useState({ fullName: "", email: "", phone: "" });
   const [reservation, setReservation] = useState(null);
   const [remainingSeconds, setRemainingSeconds] = useState(0);
@@ -16,6 +18,17 @@ export default function RegisterDialog({ workshop, user, onClose, onReserved }) 
   const paymentConfirmed = /your booking is confirmed|booking is already confirmed/i.test(
     paymentMessage,
   );
+
+  function closeDialogForCheckout() {
+    checkoutDialogCloseRef.current = true;
+    if (ref.current?.open) ref.current.close();
+  }
+
+  function restoreDialogAfterCheckout() {
+    window.requestAnimationFrame(() => {
+      if (workshop && ref.current && !ref.current.open) ref.current.showModal();
+    });
+  }
 
   useEffect(() => {
     const dialog = ref.current;
@@ -57,7 +70,7 @@ export default function RegisterDialog({ workshop, user, onClose, onReserved }) 
     try {
       const result = await bookingApi("/bookings/reservations", user, {
         method: "POST",
-        body: JSON.stringify({ workshopId: workshop.id, participant }),
+        body: JSON.stringify({ eventId: workshop.id, participant }),
       });
       setReservation(result);
       onReserved();
@@ -129,14 +142,15 @@ export default function RegisterDialog({ workshop, user, onClose, onReserved }) 
     setError("");
     setPaymentMessage("");
     try {
-      const order = await bookingApi("/payments/orders", user, {
+      const orderResponse = await bookingApi("/payments/orders", user, {
         method: "POST",
         body: JSON.stringify({ bookingId: reservation.bookingId }),
       });
-      if (order.alreadyPaid) {
+      if (orderResponse.alreadyPaid) {
         setPaymentMessage("This booking is already confirmed.");
         return;
       }
+      const order = validateCheckoutOrder(orderResponse, reservation.bookingId);
       setReservation((current) => ({ ...current, expiresAt: order.expiresAt }));
       await loadRazorpayCheckout();
       const checkout = new window.Razorpay({
@@ -175,10 +189,18 @@ export default function RegisterDialog({ workshop, user, onClose, onReserved }) 
                 cancelError.message ||
                   "Checkout closed, but we could not update its status. Please check again.",
               );
+            } finally {
+              restoreDialogAfterCheckout();
             }
           },
         },
-        handler: (result) => completeCheckout(result),
+        handler: async (result) => {
+          try {
+            await completeCheckout(result);
+          } finally {
+            restoreDialogAfterCheckout();
+          }
+        },
       });
       checkout.on("payment.failed", async (failure) => {
         setRemainingSeconds(0);
@@ -197,8 +219,10 @@ export default function RegisterDialog({ workshop, user, onClose, onReserved }) 
           setError(cancelError.message || "Could not update the failed payment status.");
         }
       });
+      closeDialogForCheckout();
       checkout.open();
     } catch (paymentError) {
+      if (checkoutDialogCloseRef.current) restoreDialogAfterCheckout();
       setError(paymentError.message || "Could not start Razorpay Checkout.");
     } finally {
       setSubmitting(false);
@@ -248,7 +272,13 @@ export default function RegisterDialog({ workshop, user, onClose, onReserved }) 
     <dialog
       ref={ref}
       aria-labelledby="register-title"
-      onClose={onClose}
+      onClose={() => {
+        if (checkoutDialogCloseRef.current) {
+          checkoutDialogCloseRef.current = false;
+          return;
+        }
+        onClose();
+      }}
       onClick={(event) => {
         if (event.target === ref.current) onClose();
       }}
@@ -309,7 +339,7 @@ export default function RegisterDialog({ workshop, user, onClose, onReserved }) 
                     </Button>
                   )}
                 {!paymentMessage && remainingSeconds > 0 && (
-                  <Button onClick={startPayment} disabled={submitting}>
+                  <Button type="button" onClick={startPayment} disabled={submitting}>
                     {submitting ? "Opening checkout…" : `Pay ${formatINR(reservation.amount)}`}
                   </Button>
                 )}
@@ -374,7 +404,7 @@ export default function RegisterDialog({ workshop, user, onClose, onReserved }) 
                   required
                   minLength={7}
                   maxLength={25}
-                  pattern="[+()0-9 -]+"
+                  pattern="[0-9\\s\\(\\)\\+\\-]+"
                   value={participant.phone}
                   onChange={updateParticipant}
                   className="mt-1 w-full rounded-xl border border-charcoal/30 bg-white px-4 py-3 font-normal"

@@ -1,23 +1,58 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useEffect, useRef, useState } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import logo from "../assets/logo.jpg";
 import Button from "./ui/Button.jsx";
 import { NAV_LINKS } from "../data/siteData.js";
 import { useAuth } from "../auth/AuthContext.jsx";
+import { bookingApi } from "../booking/api.js";
 
 export default function Navbar() {
   const [open, setOpen] = useState(false);
   const [authError, setAuthError] = useState("");
-  const { user, signOut } = useAuth();
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [signingOut, setSigningOut] = useState(false);
+  const signingOutRef = useRef(false);
+  const { user, loading, signOut } = useAuth();
+  const location = useLocation();
+  const navigate = useNavigate();
   const close = () => setOpen(false);
+  const sectionHref = (href) => location.pathname === "/" ? href : `/${href}`;
+
+  useEffect(() => {
+    if (!user || loading) {
+      setIsAdmin(false);
+      return undefined;
+    }
+
+    let active = true;
+    setIsAdmin(false);
+    bookingApi("/admin/session", user)
+      .then(() => {
+        if (active) setIsAdmin(true);
+      })
+      .catch(() => {
+        if (active) setIsAdmin(false);
+      });
+
+    return () => {
+      active = false;
+    };
+  }, [user, loading]);
 
   async function handleSignOut() {
+    if (signingOutRef.current) return;
+    signingOutRef.current = true;
     setAuthError("");
+    setSigningOut(true);
     try {
       await signOut();
       close();
+      navigate("/", { replace: true });
     } catch (error) {
       setAuthError(error.message || "Could not sign out. Please try again.");
+    } finally {
+      signingOutRef.current = false;
+      setSigningOut(false);
     }
   }
 
@@ -32,14 +67,33 @@ export default function Navbar() {
         <ul className="hidden items-center gap-8 md:flex">
           {NAV_LINKS.map((link) => (
             <li key={link.href}>
-              <a href={link.href} className="text-sm font-medium text-white/85 hover:text-white">
+              <a
+                href={sectionHref(link.href)}
+                aria-current={location.pathname === "/" && location.hash === link.href ? "location" : undefined}
+                className={`nav-link text-sm font-medium text-white/85 hover:text-white ${
+                  location.pathname === "/" && location.hash === link.href ? "nav-link-active" : ""
+                }`}
+              >
                 {link.label}
               </a>
             </li>
           ))}
+          {isAdmin && (
+            <li>
+              <Link
+                to="/admin"
+                aria-current={location.pathname.startsWith("/admin") ? "page" : undefined}
+                className={`nav-link text-sm font-medium text-white/85 hover:text-white ${
+                  location.pathname.startsWith("/admin") ? "nav-link-active" : ""
+                }`}
+              >
+                Admin Dashboard
+              </Link>
+            </li>
+          )}
         </ul>
         <Button
-          href="#workshops"
+          href={sectionHref("#workshops")}
           variant="secondary"
           className="!hidden border-white bg-white text-brand-blue hover:bg-white/90 md:!inline-flex"
         >
@@ -48,11 +102,26 @@ export default function Navbar() {
         <div className="hidden items-center gap-4 md:flex">
           {user ? (
             <>
-              <Link to="/my-tickets" className="text-sm font-medium text-white/85 hover:text-white">
+              <Link
+                to="/my-reservations"
+                aria-current={location.pathname === "/my-reservations" ? "page" : undefined}
+                className={`nav-link text-sm font-medium text-white/85 hover:text-white ${
+                  location.pathname === "/my-reservations" ? "nav-link-active" : ""
+                }`}
+              >
+                My Reservations
+              </Link>
+              <Link
+                to="/my-tickets"
+                aria-current={location.pathname === "/my-tickets" ? "page" : undefined}
+                className={`nav-link text-sm font-medium text-white/85 hover:text-white ${
+                  location.pathname === "/my-tickets" ? "nav-link-active" : ""
+                }`}
+              >
                 My tickets
               </Link>
-              <button type="button" onClick={handleSignOut} className="text-sm text-white/85 hover:text-white hover:underline">
-                Sign out
+              <button type="button" onClick={handleSignOut} disabled={signingOut} className="text-sm text-white/85 hover:text-white hover:underline disabled:opacity-60">
+                {signingOut ? "Signing out…" : "Sign out"}
               </button>
             </>
           ) : (
@@ -77,23 +146,61 @@ export default function Navbar() {
       </nav>
 
       {open && (
-        <div id="mobile-menu" className="border-t border-white/15 px-6 pb-6 md:hidden">
+        <div id="mobile-menu" className="mobile-menu-enter border-t border-white/15 px-6 pb-6 md:hidden">
           <ul className="flex flex-col gap-1 py-3">
             {NAV_LINKS.map((link) => (
               <li key={link.href}>
-                <a href={link.href} onClick={close} className="block py-3 text-lg font-medium">
+                <a
+                  href={sectionHref(link.href)}
+                  onClick={close}
+                  aria-current={location.pathname === "/" && location.hash === link.href ? "location" : undefined}
+                  className={`nav-link block py-3 text-lg font-medium ${
+                    location.pathname === "/" && location.hash === link.href ? "nav-link-active" : ""
+                  }`}
+                >
                   {link.label}
                 </a>
               </li>
             ))}
+            {isAdmin && (
+              <li>
+                <Link
+                  to="/admin"
+                  onClick={close}
+                  aria-current={location.pathname.startsWith("/admin") ? "page" : undefined}
+                  className={`nav-link block py-3 text-lg font-medium ${
+                    location.pathname.startsWith("/admin") ? "nav-link-active" : ""
+                  }`}
+                >
+                  Admin Dashboard
+                </Link>
+              </li>
+            )}
           </ul>
           {user ? (
             <div className="flex flex-col gap-4">
-              <Link to="/my-tickets" onClick={close} className="py-2 text-lg font-medium">
+              <Link
+                to="/my-reservations"
+                onClick={close}
+                aria-current={location.pathname === "/my-reservations" ? "page" : undefined}
+                className={`nav-link py-2 text-lg font-medium ${
+                  location.pathname === "/my-reservations" ? "nav-link-active" : ""
+                }`}
+              >
+                My Reservations
+              </Link>
+              <Link
+                to="/my-tickets"
+                onClick={close}
+                aria-current={location.pathname === "/my-tickets" ? "page" : undefined}
+                className={`nav-link py-2 text-lg font-medium ${
+                  location.pathname === "/my-tickets" ? "nav-link-active" : ""
+                }`}
+              >
                 My tickets
               </Link>
-              <button type="button" onClick={handleSignOut} className="py-2 text-left">
-                Sign out
+              <button type="button" onClick={handleSignOut} disabled={signingOut} className="py-2 text-left disabled:opacity-60">
+                {signingOut ? "Signing out…" : "Sign out"}
               </button>
             </div>
           ) : (
@@ -102,7 +209,7 @@ export default function Navbar() {
             </Link>
           )}
           <Button
-            href="#workshops"
+            href={sectionHref("#workshops")}
             onClick={close}
             variant="secondary"
             className="w-full border-white bg-white text-brand-blue hover:bg-white/90"

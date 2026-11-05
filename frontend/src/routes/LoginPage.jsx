@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Link, Navigate, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../auth/AuthContext.jsx";
 import { firebaseConfigured } from "../firebase.js";
@@ -9,11 +9,14 @@ export default function LoginPage() {
   const navigate = useNavigate();
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const submittingRef = useRef(false);
 
   if (loading) return <p className="p-8 text-center" role="status">Checking your sign-in…</p>;
   if (user) return <Navigate to="/my-tickets" replace />;
 
   async function handleGoogleSignIn() {
+    if (submittingRef.current) return;
+    submittingRef.current = true;
     setError("");
     setSubmitting(true);
     try {
@@ -31,6 +34,7 @@ export default function LoginPage() {
             : signInError.message || "Google sign-in failed. Please try again.",
       );
     } finally {
+      submittingRef.current = false;
       setSubmitting(false);
     }
   }
@@ -64,7 +68,12 @@ export default function LoginPage() {
           disabled={!firebaseConfigured || submitting}
           className="mt-8 w-full rounded-full bg-brand-blue px-6 py-3 font-medium text-white transition-colors hover:bg-brand-blue/90 disabled:cursor-not-allowed disabled:opacity-50"
         >
-          {submitting ? "Signing in…" : "Continue with Google"}
+          {submitting ? (
+            <span className="inline-flex items-center gap-3">
+              <span className="loading-spinner" aria-hidden="true" />
+              Signing in with Google…
+            </span>
+          ) : "Continue with Google"}
         </button>
         <p className="mt-6 text-center text-sm text-charcoal/70">
           Administrator?{" "}

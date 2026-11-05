@@ -23,6 +23,13 @@ export function classifyFirebaseAdminError(error) {
     };
   }
 
+  if (code === "auth/insufficient-permission") {
+    return {
+      category: "firebase-auth-permission-denied",
+      message: "Firebase ID token revocation could not be checked. Confirm the Application Default Credentials identity has read access to Firebase Authentication in the configured project. Authentication remains fail-closed; do not disable revocation checking.",
+    };
+  }
+
   if (
     code === "7" ||
     code === "permission-denied" ||
