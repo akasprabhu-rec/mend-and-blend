@@ -6,34 +6,15 @@ import bookingsRouter from "./routes/bookings.js";
 import healthRouter from "./routes/health.js";
 import paymentsRouter from "./routes/payments.js";
 import workshopsRouter from "./routes/workshops.js";
+import { createCorsOptions } from "./corsConfig.js";
 import {
   logFirebaseAdminError,
 } from "./firebaseAdminDiagnostics.js";
 
 const app = express();
 const PORT = process.env.PORT || 5000;
-const configuredOrigins = (process.env.FRONTEND_URL || "")
-    .split(",")
-    .map((origin) => origin.trim())
-    .filter(Boolean);
-const allowedOrigins = new Set(
-  configuredOrigins.length > 0
-    ? configuredOrigins
-    : ["http://localhost:5173", "http://127.0.0.1:5173"],
-);
-if (process.env.NODE_ENV !== "production") {
-  allowedOrigins.add("http://localhost:5173");
-  allowedOrigins.add("http://127.0.0.1:5173");
-}
 
-app.use(
-  cors({
-    origin(origin, callback) {
-      if (!origin) return callback(null, false);
-      return callback(null, allowedOrigins.has(origin));
-    },
-  }),
-);
+app.use(cors(createCorsOptions()));
 
 // The Razorpay webhook verifies its signature against the unparsed request bytes.
 app.use("/api/payments", paymentsRouter);
