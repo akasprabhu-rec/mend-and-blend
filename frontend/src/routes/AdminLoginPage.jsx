@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../auth/AuthContext.jsx";
 import { bookingApi } from "../booking/api.js";
+import ThemeToggle from "../components/ui/ThemeToggle.jsx";
 
 export default function AdminLoginPage() {
   const { user, loading, signInWithGoogle } = useAuth();
@@ -70,23 +71,26 @@ export default function AdminLoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-brand-ivory via-sage/15 to-brand-ivory">
+    <div className="min-h-screen bg-gradient-to-b from-brand-ivory via-sage/15 to-brand-ivory dark:from-[#181E22] dark:via-[#1C2322] dark:to-[#181E22]">
       <main className="mx-auto flex min-h-screen max-w-xl flex-col justify-center px-6 py-16">
-        <Link to="/" className="text-sm font-medium text-brand-blue underline-offset-4 hover:text-terracotta-dark hover:underline">
-          ← Back to Mend and Blend
-        </Link>
-        <section className="mt-8 rounded-3xl border border-brand-blue/20 border-t-4 border-t-brand-blue bg-white p-8 shadow-md sm:p-10">
-          <p className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.2em] text-sage-dark">
-            <span className="h-px w-5 bg-gold-dark" aria-hidden="true" />
+        <div className="flex items-center justify-between gap-4">
+          <Link to="/" className="text-sm font-medium text-brand-blue underline-offset-4 hover:text-terracotta-dark hover:underline dark:text-[#96B7DA] dark:hover:text-gold">
+            ← Back to Mend and Blend
+          </Link>
+          <ThemeToggle variant="surface" />
+        </div>
+        <section className="mt-8 rounded-3xl border border-brand-blue/20 border-t-4 border-t-brand-blue bg-white p-8 shadow-md dark:border-white/10 dark:border-t-[#8FB2D6] dark:bg-[#21292E] sm:p-10">
+          <p className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.2em] text-sage-dark dark:text-sage">
+            <span className="h-px w-5 bg-gold-dark dark:bg-gold" aria-hidden="true" />
             Administrator access
           </p>
-          <h1 className="mt-3 text-4xl font-medium text-brand-blue">Sign in to the dashboard</h1>
-          <p className="mt-4 leading-relaxed text-charcoal/80">
+          <h1 className="mt-3 text-4xl font-medium text-brand-blue dark:text-[#96B7DA]">Sign in to the dashboard</h1>
+          <p className="mt-4 leading-relaxed text-charcoal/80 dark:text-brand-ivory/80">
             Continue with the Google account that has been granted administrator access. The server
             verifies the account’s trusted Firebase claim before opening the dashboard.
           </p>
           {error && (
-            <p className="mt-6 rounded-2xl border border-terracotta/50 bg-terracotta/10 p-4 text-sm text-terracotta-dark" role="alert">
+            <p className="mt-6 rounded-2xl border border-terracotta/50 bg-terracotta/10 p-4 text-sm text-terracotta-dark dark:border-terracotta/45 dark:bg-terracotta/15 dark:text-[#F0A592]" role="alert">
               {error}
             </p>
           )}
@@ -94,7 +98,7 @@ export default function AdminLoginPage() {
             type="button"
             onClick={handleSignIn}
             disabled={submitting}
-            className="mt-8 w-full rounded-full bg-brand-blue px-6 py-3 font-medium text-white shadow-sm transition-all hover:bg-brand-blue-dark hover:shadow-md disabled:cursor-not-allowed disabled:opacity-50"
+            className="btn-interactive mt-8 w-full rounded-full bg-brand-blue px-6 py-3 font-medium text-white shadow-sm hover:bg-brand-blue-dark hover:shadow-[0_10px_22px_-8px_rgba(64,95,128,0.42)] dark:bg-[#496D92] dark:hover:bg-[#3B5B7D] disabled:cursor-not-allowed disabled:opacity-50"
           >
             {submitting ? (
               <span className="inline-flex items-center gap-3">

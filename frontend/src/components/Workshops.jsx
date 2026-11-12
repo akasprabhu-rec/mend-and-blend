@@ -87,7 +87,7 @@ export default function Workshops() {
       eyebrow="Events"
       title="Gather, explore and grow"
       intro="Explore our published events and workshops. Each gathering offers a welcoming space for curiosity, connection and self-discovery."
-      className="border-t border-sage/30 bg-brand-ivory"
+      className="border-t border-sage/30 bg-brand-ivory dark:border-white/10 dark:bg-[#181E22]"
     >
       <ul aria-label="Event dates" className="mb-10 flex flex-wrap gap-3">
         {dates.map((d) => (
@@ -95,8 +95,8 @@ export default function Workshops() {
             key={d.date}
             className={`inline-flex items-center gap-2 rounded-full px-5 py-2 text-sm font-medium transition-colors ${
               d.publishedCount > 0
-                ? "bg-brand-blue text-white shadow-xs"
-                : "border border-sage/60 bg-sage/15 text-sage-dark"
+                ? "bg-brand-blue text-white shadow-xs dark:bg-[#36516E]"
+                : "border border-sage/60 bg-sage/15 text-sage-dark dark:border-sage/35 dark:bg-sage/10 dark:text-sage"
             }`}
           >
             {d.publishedCount > 0 && (
@@ -108,13 +108,13 @@ export default function Workshops() {
         ))}
       </ul>
 
-      {loading && <p role="status" className="text-charcoal/75">Loading available events…</p>}
+      {loading && <p role="status" className="text-charcoal/75 dark:text-brand-ivory/75">Loading available events…</p>}
       {error && (
-        <div className="mb-6 rounded-2xl border border-terracotta/50 bg-terracotta/10 p-4 text-charcoal" role="alert">
+        <div className="mb-6 rounded-2xl border border-terracotta/50 bg-terracotta/10 p-4 text-charcoal dark:border-terracotta/45 dark:bg-terracotta/15 dark:text-brand-ivory" role="alert">
           <p>{error}</p>
           <button
             type="button"
-            className="mt-2 text-sm font-medium text-terracotta-dark underline disabled:opacity-50"
+            className="mt-2 text-sm font-medium text-terracotta-dark underline dark:text-terracotta disabled:opacity-50"
             onClick={loadWorkshops}
             disabled={loading}
           >
@@ -123,7 +123,7 @@ export default function Workshops() {
         </div>
       )}
       {!loading && !error && workshops.length === 0 && (
-        <p className="rounded-2xl border border-sage/40 bg-white p-6 text-charcoal/80 shadow-xs">
+        <p className="rounded-2xl border border-sage/40 bg-white p-6 text-charcoal/80 shadow-xs dark:border-white/10 dark:bg-[#21292E] dark:text-brand-ivory/80">
           No events are currently published. Please check back soon.
         </p>
       )}
@@ -144,7 +144,7 @@ export default function Workshops() {
         <p className="mt-9 text-sm">
           <Link
             to="/my-tickets"
-            className="font-medium text-brand-blue underline decoration-terracotta/60 underline-offset-4 hover:text-terracotta-dark"
+            className="font-medium text-brand-blue underline decoration-terracotta/60 underline-offset-4 hover:text-terracotta-dark dark:text-[#96B7DA] dark:hover:text-gold"
           >
             View my tickets →
           </Link>

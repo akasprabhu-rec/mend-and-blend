@@ -2,6 +2,7 @@ import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter, Route, Routes, useLocation } from "react-router-dom";
 import { AuthProvider } from "./auth/AuthContext.jsx";
+import { ThemeProvider } from "./theme/ThemeContext.jsx";
 import "./index.css";
 import App from "./App.jsx";
 import RequireAuth from "./routes/RequireAuth.jsx";
@@ -63,9 +64,11 @@ function AnimatedRoutes() {
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <BrowserRouter>
-      <AuthProvider>
-        <AnimatedRoutes />
-      </AuthProvider>
+      <ThemeProvider>
+        <AuthProvider>
+          <AnimatedRoutes />
+        </AuthProvider>
+      </ThemeProvider>
     </BrowserRouter>
   </StrictMode>
 );

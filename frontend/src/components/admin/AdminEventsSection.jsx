@@ -80,14 +80,14 @@ const salesLabels = {
 };
 
 const salesBadgeStyles = {
-  open: "border-sage/60 bg-sage/30 text-sage-dark",
-  not_open: "border-gold/70 bg-gold/25 text-[#6B4D16]",
-  paused: "border-gold/70 bg-gold/25 text-[#6B4D16]",
-  closed: "border-terracotta/45 bg-terracotta/15 text-terracotta-dark",
-  sold_out: "border-terracotta/45 bg-terracotta/15 text-terracotta-dark",
-  completed: "border-brand-blue/25 bg-brand-blue/10 text-brand-blue",
-  archived: "border-charcoal/20 bg-charcoal/8 text-charcoal/75",
-  unpublished: "border-charcoal/20 bg-charcoal/8 text-charcoal/75",
+  open: "border-sage/60 bg-sage/30 text-sage-dark dark:border-sage/45 dark:bg-sage/18 dark:text-sage",
+  not_open: "border-gold/70 bg-gold/25 text-[#6B4D16] dark:border-gold/45 dark:bg-gold/15 dark:text-gold",
+  paused: "border-gold/70 bg-gold/25 text-[#6B4D16] dark:border-gold/45 dark:bg-gold/15 dark:text-gold",
+  closed: "border-terracotta/45 bg-terracotta/15 text-terracotta-dark dark:border-terracotta/45 dark:bg-terracotta/15 dark:text-[#F09E88]",
+  sold_out: "border-terracotta/45 bg-terracotta/15 text-terracotta-dark dark:border-terracotta/45 dark:bg-terracotta/15 dark:text-[#F09E88]",
+  completed: "border-brand-blue/25 bg-brand-blue/10 text-brand-blue dark:border-[#96B7DA]/30 dark:bg-[#96B7DA]/12 dark:text-[#96B7DA]",
+  archived: "border-charcoal/20 bg-charcoal/8 text-charcoal/75 dark:border-white/15 dark:bg-white/8 dark:text-[#C5CCD1]",
+  unpublished: "border-charcoal/20 bg-charcoal/8 text-charcoal/75 dark:border-white/15 dark:bg-white/8 dark:text-[#C5CCD1]",
 };
 
 function EventForm({ event, onCancel, onSaved, user }) {
@@ -132,12 +132,12 @@ function EventForm({ event, onCancel, onSaved, user }) {
     }
   }
 
-  const fieldClass = "mt-1 w-full rounded-xl border border-charcoal/20 bg-white px-3 py-2.5 text-sm font-normal text-charcoal";
-  const labelClass = "block text-sm font-medium text-charcoal";
+  const fieldClass = "mt-1 w-full rounded-xl border border-charcoal/20 bg-white px-3 py-2.5 text-sm font-normal text-charcoal dark:border-white/15 dark:bg-[#192024] dark:text-[#E8ECEF]";
+  const labelClass = "block text-sm font-medium text-charcoal dark:text-[#D9DFE3]";
 
   return (
-    <form onSubmit={submit} className="mt-5 grid gap-4 rounded-3xl border border-sage/45 border-t-4 border-t-terracotta bg-white p-6 shadow-sm md:grid-cols-2">
-      {error && <p className="rounded-xl border border-terracotta/50 bg-terracotta/10 p-3 text-sm text-terracotta-dark md:col-span-2" role="alert">{error}</p>}
+    <form onSubmit={submit} className="mt-5 grid gap-4 rounded-3xl border border-sage/45 border-t-4 border-t-terracotta bg-white p-6 shadow-sm dark:border-white/10 dark:border-t-terracotta dark:bg-[#21292E] dark:shadow-black/30 md:grid-cols-2">
+      {error && <p className="rounded-xl border border-terracotta/50 bg-terracotta/10 p-3 text-sm text-terracotta-dark dark:border-terracotta/45 dark:bg-terracotta/15 dark:text-[#F09E88] md:col-span-2" role="alert">{error}</p>}
       <label className={labelClass}>Event/workshop name<input className={fieldClass} value={values.title} onChange={(e) => change("title", e.target.value)} required maxLength={120} /></label>
       <label className={labelClass}>Event status
         <select className={fieldClass} value={values.status} onChange={(e) => change("status", e.target.value)}>
@@ -146,7 +146,7 @@ function EventForm({ event, onCancel, onSaved, user }) {
       </label>
       <div className={labelClass} role="status">
         Ticket sales
-        <p className={`${fieldClass} ${values.salesPaused ? "text-terracotta-dark font-medium" : "text-sage-dark font-medium"}`}>
+        <p className={`${fieldClass} ${values.salesPaused ? "font-medium text-terracotta-dark dark:text-[#F09E88]" : "font-medium text-sage-dark dark:text-sage"}`}>
           {values.salesPaused
             ? "Paused — use Resume sales on the event card to resume."
             : "Active — use Pause sales on the event card to pause."}
@@ -171,13 +171,13 @@ function EventForm({ event, onCancel, onSaved, user }) {
         <img
           src={values.imageUrl}
           alt="Event poster preview"
-          className="aspect-video w-full rounded-2xl border border-charcoal/10 object-cover md:col-span-2"
+          className="aspect-video w-full rounded-2xl border border-charcoal/10 object-cover dark:border-white/10 md:col-span-2"
         />
       )}
-      <p className="text-xs text-charcoal/65 md:col-span-2">Event schedule and ticket-sales dates are independent. This project has no image-storage integration; use a public HTTPS poster URL if needed. Date/time fields use India Standard Time.</p>
+      <p className="text-xs text-charcoal/65 dark:text-[#9DA7AE] md:col-span-2">Event schedule and ticket-sales dates are independent. This project has no image-storage integration; use a public HTTPS poster URL if needed. Date/time fields use India Standard Time.</p>
       <div className="flex flex-wrap gap-3 md:col-span-2">
-        <button disabled={busy} className="rounded-full bg-terracotta-dark px-5 py-2.5 text-sm font-medium text-white shadow-sm hover:bg-[#9D4D38] disabled:opacity-50">{busy ? "Saving…" : event ? "Save event" : "Create event"}</button>
-        <button type="button" onClick={onCancel} disabled={busy} className="rounded-full border border-charcoal/25 px-5 py-2.5 text-sm font-medium text-charcoal hover:bg-charcoal/5">Cancel</button>
+        <button disabled={busy} className="btn-interactive rounded-full bg-terracotta-dark px-5 py-2.5 text-sm font-medium text-white shadow-sm hover:bg-[#9D4D38] hover:shadow-[0_10px_22px_-8px_rgba(181,91,68,0.42)] disabled:opacity-50">{busy ? "Saving…" : event ? "Save event" : "Create event"}</button>
+        <button type="button" onClick={onCancel} disabled={busy} className="btn-interactive rounded-full border border-charcoal/25 px-5 py-2.5 text-sm font-medium text-charcoal hover:bg-charcoal/5 dark:border-white/20 dark:text-[#E8ECEF] dark:hover:bg-white/10">Cancel</button>
       </div>
     </form>
   );
@@ -320,56 +320,56 @@ export default function AdminEventsSection({ user }) {
     <section id="manage-events" className="mt-12 scroll-mt-24">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <p className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.18em] text-sage-dark">
+          <p className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.18em] text-sage-dark dark:text-sage">
             <span className="h-px w-4 bg-terracotta" aria-hidden="true" />
             Event management
           </p>
-          <h2 className="mt-2 text-3xl font-medium text-brand-blue">Manage events</h2>
+          <h2 className="mt-2 text-3xl font-medium text-brand-blue dark:text-[#96B7DA]">Manage events</h2>
         </div>
-        <button type="button" onClick={() => setFormEvent(null)} className="rounded-full bg-terracotta-dark px-5 py-3 text-sm font-medium text-white shadow-sm hover:bg-[#9D4D38]">Add event</button>
+        <button type="button" onClick={() => setFormEvent(null)} className="btn-interactive rounded-full bg-terracotta-dark px-5 py-3 text-sm font-medium text-white shadow-sm hover:bg-[#9D4D38] hover:shadow-[0_10px_22px_-8px_rgba(181,91,68,0.42)]">Add event</button>
       </div>
-      <p className="mt-2 max-w-3xl text-sm text-charcoal/75">Create and manage events here. Registration dates, manual controls, and seat availability determine when customers can register.</p>
-      {error && <p className="mt-5 rounded-2xl border border-terracotta/50 bg-terracotta/10 p-4 text-sm text-terracotta-dark" role="alert">{error}</p>}
-      {message && <p className="mt-5 rounded-2xl border border-sage/60 bg-sage/20 p-4 text-sm text-charcoal" role="status">{message}</p>}
+      <p className="mt-2 max-w-3xl text-sm text-charcoal/75 dark:text-[#C5CCD1]">Create and manage events here. Registration dates, manual controls, and seat availability determine when customers can register.</p>
+      {error && <p className="mt-5 rounded-2xl border border-terracotta/50 bg-terracotta/10 p-4 text-sm text-terracotta-dark dark:border-terracotta/45 dark:bg-terracotta/15 dark:text-[#F09E88]" role="alert">{error}</p>}
+      {message && <p className="mt-5 rounded-2xl border border-sage/60 bg-sage/20 p-4 text-sm text-charcoal dark:border-sage/45 dark:bg-sage/15 dark:text-[#E8ECEF]" role="status">{message}</p>}
       {formEvent !== undefined && <EventForm key={formEvent?.id || "new"} event={formEvent} user={user} onCancel={() => setFormEvent(undefined)} onSaved={saved} />}
       <div className="mt-5 grid gap-3 sm:grid-cols-3">
-        <label className="text-sm font-medium text-charcoal">Event schedule<select className="mt-1 w-full rounded-xl border border-charcoal/20 bg-white px-3 py-2 font-normal" value={phaseFilter} onChange={(e) => setPhaseFilter(e.target.value)}><option value="all">All events</option><option value="upcoming">Upcoming</option><option value="ongoing">Ongoing</option><option value="past">Past</option></select></label>
-        <label className="text-sm font-medium text-charcoal">Status<select className="mt-1 w-full rounded-xl border border-charcoal/20 bg-white px-3 py-2 font-normal" value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}><option value="all">All statuses</option><option value="draft">Draft</option><option value="published">Published</option><option value="unpublished">Unpublished</option><option value="archived">Archived</option></select></label>
-        <label className="text-sm font-medium text-charcoal">Ticket sales<select className="mt-1 w-full rounded-xl border border-charcoal/20 bg-white px-3 py-2 font-normal" value={salesFilter} onChange={(e) => setSalesFilter(e.target.value)}><option value="all">All sales states</option><option value="open">Registration open</option><option value="closed">Registration closed / paused</option></select></label>
+        <label className="text-sm font-medium text-charcoal dark:text-[#D9DFE3]">Event schedule<select className="mt-1 w-full rounded-xl border border-charcoal/20 bg-white px-3 py-2 font-normal text-charcoal dark:border-white/15 dark:bg-[#192024] dark:text-[#E8ECEF]" value={phaseFilter} onChange={(e) => setPhaseFilter(e.target.value)}><option value="all">All events</option><option value="upcoming">Upcoming</option><option value="ongoing">Ongoing</option><option value="past">Past</option></select></label>
+        <label className="text-sm font-medium text-charcoal dark:text-[#D9DFE3]">Status<select className="mt-1 w-full rounded-xl border border-charcoal/20 bg-white px-3 py-2 font-normal text-charcoal dark:border-white/15 dark:bg-[#192024] dark:text-[#E8ECEF]" value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}><option value="all">All statuses</option><option value="draft">Draft</option><option value="published">Published</option><option value="unpublished">Unpublished</option><option value="archived">Archived</option></select></label>
+        <label className="text-sm font-medium text-charcoal dark:text-[#D9DFE3]">Ticket sales<select className="mt-1 w-full rounded-xl border border-charcoal/20 bg-white px-3 py-2 font-normal text-charcoal dark:border-white/15 dark:bg-[#192024] dark:text-[#E8ECEF]" value={salesFilter} onChange={(e) => setSalesFilter(e.target.value)}><option value="all">All sales states</option><option value="open">Registration open</option><option value="closed">Registration closed / paused</option></select></label>
       </div>
-      {loading && <p className="mt-5 text-charcoal/75" role="status">Loading events…</p>}
-      {!loading && filteredEvents.length === 0 && !error && <p className="mt-5 rounded-2xl border border-sage/40 bg-white p-5 text-charcoal/75">No events match these filters.</p>}
+      {loading && <p className="mt-5 text-charcoal/75 dark:text-[#C5CCD1]" role="status">Loading events…</p>}
+      {!loading && filteredEvents.length === 0 && !error && <p className="mt-5 rounded-2xl border border-sage/40 bg-white p-5 text-charcoal/75 dark:border-white/10 dark:bg-[#21292E] dark:text-[#C5CCD1]">No events match these filters.</p>}
       <div className="mt-5 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
         {filteredEvents.map((event) => (
-          <article key={event.id} className="rounded-3xl border border-sage/40 bg-white p-6 shadow-sm transition-shadow hover:shadow-md">
+          <article key={event.id} className="rounded-3xl border border-sage/40 bg-white p-6 shadow-sm transition-shadow hover:shadow-md dark:border-white/10 dark:bg-[#21292E] dark:shadow-black/30">
             <div className="flex items-start justify-between gap-3">
               <div className="min-w-0">
-                <p className="text-xs font-semibold uppercase tracking-wider text-sage-dark">{event.phase} · {event.status}</p>
-                <h3 className="mt-2 break-words text-2xl font-medium text-brand-blue">{event.title}</h3>
+                <p className="text-xs font-semibold uppercase tracking-wider text-sage-dark dark:text-sage">{event.phase} · {event.status}</p>
+                <h3 className="mt-2 break-words text-2xl font-medium text-brand-blue dark:text-[#96B7DA]">{event.title}</h3>
               </div>
-              <span className={`shrink-0 rounded-full border px-3 py-1 text-xs font-semibold ${salesBadgeStyles[event.registrationStatus] || "border-brand-blue/25 bg-brand-blue/10 text-brand-blue"}`}>
+              <span className={`shrink-0 rounded-full border px-3 py-1 text-xs font-semibold ${salesBadgeStyles[event.registrationStatus] || "border-brand-blue/25 bg-brand-blue/10 text-brand-blue dark:border-[#96B7DA]/30 dark:bg-[#96B7DA]/12 dark:text-[#96B7DA]"}`}>
                 {salesLabels[event.registrationStatus] || event.registrationStatus}
               </span>
             </div>
-            {event.category && <p className="mt-3 inline-block rounded-full border border-gold/60 bg-gold/20 px-2.5 py-0.5 text-xs font-semibold uppercase tracking-wide text-[#6B4D16]">{event.category}</p>}
-            <p className="mt-3 text-sm font-medium text-charcoal">{event.date ? formatWorkshopDate(event.date) : "Date not set"} · {event.start}–{event.end}</p>
-            <p className="mt-1 text-sm text-charcoal/70">{event.venueName || event.venue}</p>
-            <dl className="mt-4 grid grid-cols-2 gap-3 border-t border-charcoal/10 pt-4 text-sm sm:grid-cols-3">
-              <div><dt className="text-xs text-charcoal/60">Price</dt><dd className="font-medium text-brand-blue">{formatINR(event.price)}</dd></div>
-              <div><dt className="text-xs text-charcoal/60">Registered</dt><dd className="font-medium">{event.registrationCount}</dd></div>
-              <div><dt className="text-xs text-charcoal/60">Booked / capacity</dt><dd className="font-medium">{event.bookedSeats} / {event.capacity}</dd></div>
-              <div><dt className="text-xs text-charcoal/60">Available</dt><dd className="font-medium">{event.availableSeats}</dd></div>
-              <div><dt className="text-xs text-charcoal/60">Revenue</dt><dd className="font-medium text-brand-blue">{formatINR(event.revenue)}</dd></div>
-              <div><dt className="text-xs text-charcoal/60">Registration deadline</dt><dd>{event.registrationCloseAt ? new Intl.DateTimeFormat("en-IN", { dateStyle: "medium", timeStyle: "short", timeZone: "Asia/Kolkata" }).format(new Date(event.registrationCloseAt)) : "No deadline"}</dd></div>
+            {event.category && <p className="mt-3 inline-block rounded-full border border-gold/60 bg-gold/20 px-2.5 py-0.5 text-xs font-semibold uppercase tracking-wide text-[#6B4D16] dark:border-gold/45 dark:bg-gold/15 dark:text-gold">{event.category}</p>}
+            <p className="mt-3 text-sm font-medium text-charcoal dark:text-[#E8ECEF]">{event.date ? formatWorkshopDate(event.date) : "Date not set"} · {event.start}–{event.end}</p>
+            <p className="mt-1 text-sm text-charcoal/70 dark:text-[#C5CCD1]">{event.venueName || event.venue}</p>
+            <dl className="mt-4 grid grid-cols-2 gap-3 border-t border-charcoal/10 pt-4 text-sm dark:border-white/10 sm:grid-cols-3">
+              <div><dt className="text-xs text-charcoal/60 dark:text-[#9DA7AE]">Price</dt><dd className="font-medium text-brand-blue dark:text-[#96B7DA]">{formatINR(event.price)}</dd></div>
+              <div><dt className="text-xs text-charcoal/60 dark:text-[#9DA7AE]">Registered</dt><dd className="font-medium dark:text-[#E8ECEF]">{event.registrationCount}</dd></div>
+              <div><dt className="text-xs text-charcoal/60 dark:text-[#9DA7AE]">Booked / capacity</dt><dd className="font-medium dark:text-[#E8ECEF]">{event.bookedSeats} / {event.capacity}</dd></div>
+              <div><dt className="text-xs text-charcoal/60 dark:text-[#9DA7AE]">Available</dt><dd className="font-medium dark:text-[#E8ECEF]">{event.availableSeats}</dd></div>
+              <div><dt className="text-xs text-charcoal/60 dark:text-[#9DA7AE]">Revenue</dt><dd className="font-medium text-brand-blue dark:text-[#96B7DA]">{formatINR(event.revenue)}</dd></div>
+              <div><dt className="text-xs text-charcoal/60 dark:text-[#9DA7AE]">Registration deadline</dt><dd className="dark:text-[#C5CCD1]">{event.registrationCloseAt ? new Intl.DateTimeFormat("en-IN", { dateStyle: "medium", timeStyle: "short", timeZone: "Asia/Kolkata" }).format(new Date(event.registrationCloseAt)) : "No deadline"}</dd></div>
             </dl>
             <div className="mt-4 flex flex-wrap gap-2">
-              <button type="button" onClick={() => setFormEvent(event)} className="rounded-full border border-charcoal/25 px-3 py-2 text-xs font-medium text-charcoal hover:border-brand-blue hover:bg-brand-blue/5 hover:text-brand-blue">Edit</button>
-              <button type="button" disabled={busy === event.id} onClick={() => changeStatus(event, event.published ? "unpublished" : "published")} className="rounded-full border border-charcoal/25 px-3 py-2 text-xs font-medium text-charcoal hover:border-brand-blue hover:bg-brand-blue/5 hover:text-brand-blue disabled:opacity-50">{event.published ? "Unpublish" : "Publish"}</button>
-              {event.status !== "archived" && <button type="button" disabled={busy === event.id} onClick={() => changeStatus(event, "archived")} className="rounded-full border border-charcoal/25 px-3 py-2 text-xs font-medium text-charcoal hover:border-brand-blue hover:bg-brand-blue/5 hover:text-brand-blue disabled:opacity-50">Archive</button>}
-              <button type="button" disabled={busy === event.id} onClick={() => pauseSales(event)} className="rounded-full border border-charcoal/25 px-3 py-2 text-xs font-medium text-charcoal hover:border-brand-blue hover:bg-brand-blue/5 hover:text-brand-blue disabled:opacity-50">{event.salesPaused ? "Resume sales" : "Pause sales"}</button>
-              <button type="button" disabled={busy === event.id} onClick={() => setRegistration(event)} className="rounded-full border border-charcoal/25 px-3 py-2 text-xs font-medium text-charcoal hover:border-brand-blue hover:bg-brand-blue/5 hover:text-brand-blue disabled:opacity-50">{event.registrationClosedManually || event.registrationStatus === "closed" ? "Open registrations" : "Close registrations"}</button>
-              <button type="button" disabled={busy === event.id} onClick={() => duplicate(event)} className="rounded-full border border-charcoal/25 px-3 py-2 text-xs font-medium text-charcoal hover:border-brand-blue hover:bg-brand-blue/5 hover:text-brand-blue disabled:opacity-50">Duplicate</button>
-              <button type="button" disabled={busy === event.id} onClick={() => removeEvent(event)} className="rounded-full border border-terracotta/50 px-3 py-2 text-xs font-medium text-terracotta-dark hover:bg-terracotta/10 disabled:opacity-50">Delete</button>
+              <button type="button" onClick={() => setFormEvent(event)} className="rounded-full border border-charcoal/25 px-3 py-2 text-xs font-medium text-charcoal hover:border-brand-blue hover:bg-brand-blue/5 hover:text-brand-blue dark:border-white/20 dark:text-[#E8ECEF] dark:hover:border-[#96B7DA]/60 dark:hover:bg-[#96B7DA]/12 dark:hover:text-[#96B7DA]">Edit</button>
+              <button type="button" disabled={busy === event.id} onClick={() => changeStatus(event, event.published ? "unpublished" : "published")} className="rounded-full border border-charcoal/25 px-3 py-2 text-xs font-medium text-charcoal hover:border-brand-blue hover:bg-brand-blue/5 hover:text-brand-blue disabled:opacity-50 dark:border-white/20 dark:text-[#E8ECEF] dark:hover:border-[#96B7DA]/60 dark:hover:bg-[#96B7DA]/12 dark:hover:text-[#96B7DA]">{event.published ? "Unpublish" : "Publish"}</button>
+              {event.status !== "archived" && <button type="button" disabled={busy === event.id} onClick={() => changeStatus(event, "archived")} className="rounded-full border border-charcoal/25 px-3 py-2 text-xs font-medium text-charcoal hover:border-brand-blue hover:bg-brand-blue/5 hover:text-brand-blue disabled:opacity-50 dark:border-white/20 dark:text-[#E8ECEF] dark:hover:border-[#96B7DA]/60 dark:hover:bg-[#96B7DA]/12 dark:hover:text-[#96B7DA]">Archive</button>}
+              <button type="button" disabled={busy === event.id} onClick={() => pauseSales(event)} className="rounded-full border border-charcoal/25 px-3 py-2 text-xs font-medium text-charcoal hover:border-brand-blue hover:bg-brand-blue/5 hover:text-brand-blue disabled:opacity-50 dark:border-white/20 dark:text-[#E8ECEF] dark:hover:border-[#96B7DA]/60 dark:hover:bg-[#96B7DA]/12 dark:hover:text-[#96B7DA]">{event.salesPaused ? "Resume sales" : "Pause sales"}</button>
+              <button type="button" disabled={busy === event.id} onClick={() => setRegistration(event)} className="rounded-full border border-charcoal/25 px-3 py-2 text-xs font-medium text-charcoal hover:border-brand-blue hover:bg-brand-blue/5 hover:text-brand-blue disabled:opacity-50 dark:border-white/20 dark:text-[#E8ECEF] dark:hover:border-[#96B7DA]/60 dark:hover:bg-[#96B7DA]/12 dark:hover:text-[#96B7DA]">{event.registrationClosedManually || event.registrationStatus === "closed" ? "Open registrations" : "Close registrations"}</button>
+              <button type="button" disabled={busy === event.id} onClick={() => duplicate(event)} className="rounded-full border border-charcoal/25 px-3 py-2 text-xs font-medium text-charcoal hover:border-brand-blue hover:bg-brand-blue/5 hover:text-brand-blue disabled:opacity-50 dark:border-white/20 dark:text-[#E8ECEF] dark:hover:border-[#96B7DA]/60 dark:hover:bg-[#96B7DA]/12 dark:hover:text-[#96B7DA]">Duplicate</button>
+              <button type="button" disabled={busy === event.id} onClick={() => removeEvent(event)} className="rounded-full border border-terracotta/50 px-3 py-2 text-xs font-medium text-terracotta-dark hover:bg-terracotta/10 disabled:opacity-50 dark:border-terracotta/45 dark:text-[#F09E88] dark:hover:bg-terracotta/15">Delete</button>
             </div>
           </article>
         ))}

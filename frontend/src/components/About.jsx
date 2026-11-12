@@ -51,21 +51,23 @@ export default function About() {
       eyebrow="About Mend and Blend"
       title="Mend what feels worn. Blend with what is real."
       intro="Our workshops invite you to explore the mind with curiosity instead of pressure. To mend is to tend to yourself with care. To blend is to bring all your parts, and the people around you, into the same room."
-      className="border-t border-sage/30 bg-gradient-to-b from-sage/20 via-sage/12 to-brand-ivory"
+      className="border-t border-sage/30 bg-gradient-to-b from-sage/20 via-sage/12 to-brand-ivory dark:border-white/10 dark:from-[#1D2522] dark:via-[#1B2225] dark:to-[#181E22]"
     >
       <div className="grid items-center gap-12 md:grid-cols-5">
         <Reveal className="mx-auto w-full max-w-sm md:col-span-2">
           <div className="relative">
             <div
-              className="absolute -inset-2.5 rounded-3xl border border-gold/50 bg-brand-ivory"
+              className="absolute -inset-2.5 rounded-3xl border border-gold/50 bg-brand-ivory dark:border-gold/30 dark:bg-[#21292E]"
               aria-hidden="true"
             />
-            <div className="relative overflow-hidden rounded-2xl border border-brand-blue/15 bg-[#416187] p-2.5 shadow-lg">
-              <img
-                src={logo}
-                alt="Mend and Blend logo"
-                className="aspect-square w-full rounded-xl object-contain"
-              />
+            <div className="image-frame relative rounded-2xl border border-brand-blue/15 bg-[#416187] p-2.5 shadow-lg dark:border-white/15">
+              <div className="overflow-hidden rounded-xl">
+                <img
+                  src={logo}
+                  alt="Mend and Blend logo"
+                  className="image-frame__img aspect-square w-full object-contain"
+                />
+              </div>
             </div>
           </div>
         </Reveal>
@@ -76,18 +78,20 @@ export default function About() {
               as="li"
               key={v.title}
               delay={i * 100}
-              className="group rounded-2xl border border-sage/50 bg-brand-ivory/95 p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-terracotta/50 hover:bg-white hover:shadow-md"
+              className="h-full"
             >
-              <div className="flex items-center justify-between gap-3">
-                <span className="inline-flex items-center rounded-full border border-gold/70 bg-gold/25 px-3 py-0.5 text-xs font-semibold tracking-[0.16em] text-terracotta-dark">
-                  0{i + 1}
-                </span>
-                <span className="flex h-9 w-9 items-center justify-center rounded-full bg-terracotta/12 text-terracotta-dark ring-1 ring-terracotta/25 transition-colors duration-300 group-hover:bg-terracotta group-hover:text-[#222A2F]">
-                  {v.icon}
-                </span>
-              </div>
-              <h3 className="mt-4 text-2xl font-medium text-brand-blue">{v.title}</h3>
-              <p className="mt-2 leading-relaxed text-charcoal/80">{v.text}</p>
+              <article className="feature-card group h-full rounded-2xl border border-sage/50 bg-brand-ivory/95 p-6 shadow-sm hover:bg-white hover:shadow-md dark:border-white/10 dark:bg-[#21292E] dark:hover:bg-[#263036]">
+                <div className="flex items-center justify-between gap-3">
+                  <span className="inline-flex items-center rounded-full border border-gold/70 bg-gold/25 px-3 py-0.5 text-xs font-semibold tracking-[0.16em] text-terracotta-dark dark:border-gold/40 dark:bg-gold/15 dark:text-gold">
+                    0{i + 1}
+                  </span>
+                  <span className="feature-card__icon flex h-9 w-9 items-center justify-center rounded-full bg-sage/25 text-brand-blue ring-1 ring-brand-blue/20 group-hover:bg-terracotta/18 group-hover:text-terracotta-dark group-hover:ring-terracotta/45 dark:bg-white/8 dark:text-[#96B7DA] dark:ring-white/15 dark:group-hover:bg-terracotta/25 dark:group-hover:text-terracotta dark:group-hover:ring-terracotta/50">
+                    {v.icon}
+                  </span>
+                </div>
+                <h3 className="mt-4 text-2xl font-medium text-brand-blue dark:text-[#96B7DA]">{v.title}</h3>
+                <p className="mt-2 leading-relaxed text-charcoal/80 dark:text-brand-ivory/80">{v.text}</p>
+              </article>
             </Reveal>
           ))}
         </ul>

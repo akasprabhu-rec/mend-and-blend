@@ -3,7 +3,7 @@ import { NAV_LINKS, SITE } from "../data/siteData.js";
 
 export default function Footer() {
   return (
-    <footer className="border-t-2 border-gold/40 bg-brand-blue px-6 py-14 text-white">
+    <footer className="border-t-2 border-gold/40 bg-brand-blue px-6 py-14 text-white transition-colors duration-200 dark:border-gold/30 dark:bg-[#213347]">
       <div className="mx-auto grid max-w-6xl gap-10 md:grid-cols-3">
         <div>
           <div className="flex items-center gap-3">
@@ -23,7 +23,7 @@ export default function Footer() {
               <li key={l.href}>
                 <a
                   href={l.href}
-                  className="inline-block text-brand-ivory/90 underline-offset-4 hover:text-gold hover:underline"
+                  className="inline-block text-brand-ivory/90 underline-offset-4 decoration-terracotta/80 transition-colors duration-250 hover:text-gold hover:underline"
                 >
                   {l.label}
                 </a>
@@ -36,12 +36,12 @@ export default function Footer() {
             Visit &amp; Connect
           </p>
           <p>
-            <a href={`tel:${SITE.phoneTel}`} className="underline-offset-4 hover:text-gold hover:underline">
+            <a href={`tel:${SITE.phoneTel}`} className="underline-offset-4 decoration-terracotta/80 transition-colors duration-250 hover:text-gold hover:underline">
               {SITE.phoneDisplay}
             </a>
           </p>
           <p className="mt-1 break-all">
-            <a href={`mailto:${SITE.email}`} className="underline-offset-4 hover:text-gold hover:underline">
+            <a href={`mailto:${SITE.email}`} className="underline-offset-4 decoration-terracotta/80 transition-colors duration-250 hover:text-gold hover:underline">
               {SITE.email}
             </a>
           </p>

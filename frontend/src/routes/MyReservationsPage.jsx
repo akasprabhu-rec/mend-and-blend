@@ -19,10 +19,10 @@ const statusLabels = {
 };
 
 const statusBadgeStyles = {
-  confirmed: "border-sage/60 bg-sage/30 text-sage-dark",
-  pending: "border-gold/70 bg-gold/25 text-[#6B4D16]",
-  expired: "border-terracotta/45 bg-terracotta/15 text-terracotta-dark",
-  cancelled: "border-terracotta/45 bg-terracotta/15 text-terracotta-dark",
+  confirmed: "border-sage/60 bg-sage/30 text-sage-dark dark:border-sage/45 dark:bg-sage/18 dark:text-sage",
+  pending: "border-gold/70 bg-gold/25 text-[#6B4D16] dark:border-gold/45 dark:bg-gold/15 dark:text-gold",
+  expired: "border-terracotta/45 bg-terracotta/15 text-terracotta-dark dark:border-terracotta/45 dark:bg-terracotta/15 dark:text-[#F09E88]",
+  cancelled: "border-terracotta/45 bg-terracotta/15 text-terracotta-dark dark:border-terracotta/45 dark:bg-terracotta/15 dark:text-[#F09E88]",
 };
 
 function formatTime(reservation) {
@@ -209,34 +209,34 @@ export default function MyReservationsPage() {
   return (
     <>
       <Navbar />
-      <div className="min-h-screen bg-gradient-to-b from-brand-ivory via-sage/12 to-brand-ivory">
+      <div className="min-h-screen bg-gradient-to-b from-brand-ivory via-sage/12 to-brand-ivory dark:from-[#181E22] dark:via-[#1B2429] dark:to-[#181E22]">
         <main className="mx-auto max-w-5xl px-6 py-12 sm:py-16">
           <header className="mt-8">
-            <p className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.2em] text-sage-dark">
+            <p className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.2em] text-sage-dark dark:text-sage">
               <span className="h-px w-5 bg-terracotta" aria-hidden="true" />
               Customer account
             </p>
-            <h1 className="mt-3 text-4xl font-medium text-brand-blue">My Reservations</h1>
-            <p className="mt-3 text-charcoal/75">
+            <h1 className="mt-3 text-4xl font-medium text-brand-blue dark:text-[#96B7DA]">My Reservations</h1>
+            <p className="mt-3 text-charcoal/75 dark:text-[#C5CCD1]">
               View your seat holds, continue payment, or review confirmed bookings.
             </p>
           </header>
 
           {error && (
-            <p className="mt-6 rounded-2xl border border-terracotta/50 bg-terracotta/10 p-4 text-sm text-terracotta-dark" role="alert">
+            <p className="mt-6 rounded-2xl border border-terracotta/50 bg-terracotta/10 p-4 text-sm text-terracotta-dark dark:border-terracotta/45 dark:bg-terracotta/15 dark:text-[#F09E88]" role="alert">
               {error}
             </p>
           )}
           {notice && (
-            <p className="mt-6 rounded-2xl border border-sage/60 bg-sage/20 p-4 text-sm text-charcoal" role="status">
+            <p className="mt-6 rounded-2xl border border-sage/60 bg-sage/20 p-4 text-sm text-charcoal dark:border-sage/45 dark:bg-sage/15 dark:text-[#E8ECEF]" role="status">
               {notice}
             </p>
           )}
-          {loading && <p className="mt-8 text-charcoal/75" role="status">Loading your reservations…</p>}
+          {loading && <p className="mt-8 text-charcoal/75 dark:text-[#C5CCD1]" role="status">Loading your reservations…</p>}
           {!loading && !error && reservations.length === 0 && (
-            <p className="mt-8 rounded-2xl border border-sage/40 bg-white p-6 text-charcoal/80 shadow-xs">
+            <p className="mt-8 rounded-2xl border border-sage/40 bg-white p-6 text-charcoal/80 shadow-xs dark:border-white/10 dark:bg-[#21292E] dark:text-[#C5CCD1]">
               You do not have any reservations yet. Browse{" "}
-              <Link to="/#workshops" className="font-medium text-terracotta-dark underline underline-offset-4 hover:text-brand-blue">
+              <Link to="/#workshops" className="font-medium text-terracotta-dark underline underline-offset-4 hover:text-brand-blue dark:text-[#F09E88] dark:hover:text-[#96B7DA]">
                 upcoming workshops
               </Link>.
             </p>
@@ -249,14 +249,14 @@ export default function MyReservationsPage() {
               return (
                 <li
                   key={reservation.id}
-                  className="rounded-3xl border border-charcoal/10 bg-white p-6 shadow-sm transition-shadow hover:shadow-md sm:p-8"
+                  className="rounded-3xl border border-charcoal/10 bg-white p-6 shadow-sm transition-shadow hover:shadow-md dark:border-white/10 dark:bg-[#21292E] dark:shadow-black/30 sm:p-8"
                 >
                   <div className="flex flex-wrap items-start justify-between gap-4">
                     <div>
-                      <h2 className="text-2xl font-medium text-brand-blue">
+                      <h2 className="text-2xl font-medium text-brand-blue dark:text-[#96B7DA]">
                         {reservation.workshopName || "Workshop reservation"}
                       </h2>
-                      <p className="mt-2 text-sm text-charcoal/75">
+                      <p className="mt-2 text-sm text-charcoal/75 dark:text-[#C5CCD1]">
                         {reservation.sessionDate
                           ? formatWorkshopDate(reservation.sessionDate)
                           : "Date to be confirmed"}{" "}
@@ -265,26 +265,26 @@ export default function MyReservationsPage() {
                     </div>
                     <span
                       className={`rounded-full border px-3 py-1 text-xs font-semibold ${
-                        statusBadgeStyles[status] || "border-brand-blue/25 bg-brand-blue/10 text-brand-blue"
+                        statusBadgeStyles[status] || "border-brand-blue/25 bg-brand-blue/10 text-brand-blue dark:border-[#96B7DA]/30 dark:bg-[#96B7DA]/12 dark:text-[#96B7DA]"
                       }`}
                     >
                       {statusLabels[status]}
                     </span>
                   </div>
 
-                  <dl className="mt-5 grid gap-4 border-t border-charcoal/8 pt-5 text-sm sm:grid-cols-2">
+                  <dl className="mt-5 grid gap-4 border-t border-charcoal/8 pt-5 text-sm dark:border-white/10 sm:grid-cols-2">
                     <div>
-                      <dt className="text-xs font-semibold uppercase tracking-wider text-sage-dark">Amount</dt>
-                      <dd className="mt-1 font-serif text-2xl font-semibold text-brand-blue">
+                      <dt className="text-xs font-semibold uppercase tracking-wider text-sage-dark dark:text-sage">Amount</dt>
+                      <dd className="mt-1 font-serif text-2xl font-semibold text-brand-blue dark:text-[#96B7DA]">
                         {formatINR(reservation.amount || 0)}
                       </dd>
                     </div>
                     {active && reservation.expiresAt && (
                       <div>
-                        <dt className="text-xs font-semibold uppercase tracking-wider text-sage-dark">
+                        <dt className="text-xs font-semibold uppercase tracking-wider text-sage-dark dark:text-sage">
                           Reservation expires in
                         </dt>
-                        <dd className="mt-1 text-lg font-semibold text-terracotta-dark tabular-nums">
+                        <dd className="mt-1 text-lg font-semibold text-terracotta-dark tabular-nums dark:text-[#F09E88]">
                           {formatReservationCountdown(reservation.expiresAt, now)}
                         </dd>
                       </div>
@@ -298,7 +298,7 @@ export default function MyReservationsPage() {
                           type="button"
                           onClick={() => handleContinuePayment(reservation)}
                           disabled={busyId === reservation.id}
-                          className="rounded-full bg-terracotta-dark px-5 py-3 text-sm font-medium text-white shadow-sm hover:bg-[#9D4D38] disabled:opacity-60"
+                          className="btn-interactive rounded-full bg-terracotta-dark px-5 py-3 text-sm font-medium text-white shadow-sm hover:bg-[#9D4D38] hover:shadow-[0_10px_22px_-8px_rgba(181,91,68,0.42)] disabled:opacity-60"
                         >
                           {busyId === reservation.id ? "Opening checkout…" : "Continue Payment"}
                         </button>
@@ -306,7 +306,7 @@ export default function MyReservationsPage() {
                           type="button"
                           onClick={() => handleCancel(reservation)}
                           disabled={busyId === reservation.id}
-                          className="rounded-full border border-charcoal/25 px-5 py-3 text-sm font-medium text-charcoal hover:border-terracotta/50 hover:bg-terracotta/10 hover:text-terracotta-dark disabled:opacity-60"
+                          className="btn-interactive rounded-full border border-charcoal/25 px-5 py-3 text-sm font-medium text-charcoal hover:border-terracotta/50 hover:bg-terracotta/10 hover:text-terracotta-dark disabled:opacity-60 dark:border-white/20 dark:text-[#E8ECEF] dark:hover:border-terracotta/50 dark:hover:bg-terracotta/15 dark:hover:text-[#F09E88]"
                         >
                           Cancel reservation
                         </button>
@@ -315,7 +315,7 @@ export default function MyReservationsPage() {
                     {status === "confirmed" && (
                       <Link
                         to="/my-tickets"
-                        className="rounded-full bg-brand-blue px-5 py-3 text-sm font-medium text-white shadow-sm hover:bg-brand-blue-dark"
+                        className="btn-interactive rounded-full bg-brand-blue px-5 py-3 text-sm font-medium text-white shadow-sm hover:bg-brand-blue-dark hover:shadow-[0_10px_22px_-8px_rgba(64,95,128,0.42)] dark:hover:bg-[#324D69]"
                       >
                         View My Tickets
                       </Link>

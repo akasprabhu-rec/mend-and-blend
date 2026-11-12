@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import logo from "../assets/logo.jpg";
 import Button from "./ui/Button.jsx";
+import ThemeToggle from "./ui/ThemeToggle.jsx";
 import { NAV_LINKS } from "../data/siteData.js";
 import { useAuth } from "../auth/AuthContext.jsx";
 import { bookingApi } from "../booking/api.js";
@@ -57,14 +58,14 @@ export default function Navbar() {
   }
 
   return (
-    <header className="sticky top-0 z-50 border-b border-gold/25 bg-brand-blue text-white shadow-sm">
-      <nav aria-label="Main" className="mx-auto flex max-w-6xl items-center justify-between px-6 py-3">
+    <header className="sticky top-0 z-50 border-b border-gold/25 bg-brand-blue text-white shadow-sm transition-colors duration-200 dark:border-gold/20 dark:bg-[#2A4058]">
+      <nav aria-label="Main" className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-6 py-3">
         <Link to="/" onClick={close} className="flex items-center gap-3">
           <img src={logo} alt="" className="h-11 w-11 rounded-xl object-cover ring-1 ring-white/25" />
           <span className="font-serif text-2xl font-medium tracking-wide text-white">Mend and Blend</span>
         </Link>
 
-        <ul className="hidden items-center gap-8 md:flex">
+        <ul className="hidden items-center gap-7 md:flex">
           {NAV_LINKS.map((link) => (
             <li key={link.href}>
               <a
@@ -95,11 +96,11 @@ export default function Navbar() {
         <Button
           href={sectionHref("#workshops")}
           variant="accent"
-          className="!hidden border border-white/15 bg-terracotta text-[#222A2F] font-semibold shadow-sm hover:bg-gold hover:text-[#222A2F] md:!inline-flex"
+          className="!hidden border border-white/15 bg-terracotta text-[#181E22] font-semibold shadow-sm hover:bg-[#CC725B] hover:text-[#181E22] dark:bg-terracotta dark:text-[#181E22] dark:hover:bg-[#CC725B] md:!inline-flex"
         >
           Register
         </Button>
-        <div className="hidden items-center gap-5 md:flex">
+        <div className="hidden items-center gap-4 md:flex">
           {user ? (
             <>
               <Link
@@ -134,24 +135,28 @@ export default function Navbar() {
               Sign in
             </Link>
           )}
+          <ThemeToggle variant="navbar" />
         </div>
 
-        <button
-          type="button"
-          className="min-h-11 min-w-11 rounded-full p-2 text-white hover:bg-white/10 md:hidden"
-          aria-expanded={open}
-          aria-controls="mobile-menu"
-          aria-label={open ? "Close menu" : "Open menu"}
-          onClick={() => setOpen(!open)}
-        >
-          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" aria-hidden="true">
-            {open ? <path d="M6 6l12 12M18 6L6 18" /> : <path d="M4 8h16M4 16h16" />}
-          </svg>
-        </button>
+        <div className="flex items-center gap-2 md:hidden">
+          <ThemeToggle variant="navbar" compact />
+          <button
+            type="button"
+            className="min-h-11 min-w-11 rounded-full p-2 text-white hover:bg-white/10"
+            aria-expanded={open}
+            aria-controls="mobile-menu"
+            aria-label={open ? "Close menu" : "Open menu"}
+            onClick={() => setOpen(!open)}
+          >
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" aria-hidden="true">
+              {open ? <path d="M6 6l12 12M18 6L6 18" /> : <path d="M4 8h16M4 16h16" />}
+            </svg>
+          </button>
+        </div>
       </nav>
 
       {open && (
-        <div id="mobile-menu" className="mobile-menu-enter border-t border-white/15 bg-brand-blue-dark/40 px-6 pb-6 md:hidden">
+        <div id="mobile-menu" className="mobile-menu-enter border-t border-white/15 bg-brand-blue-dark/40 px-6 pb-6 dark:bg-[#1E2E3F]/80 md:hidden">
           <ul className="flex flex-col gap-1 py-3">
             {NAV_LINKS.map((link) => (
               <li key={link.href}>
@@ -222,7 +227,7 @@ export default function Navbar() {
             href={sectionHref("#workshops")}
             onClick={close}
             variant="accent"
-            className="w-full border border-white/15 bg-terracotta text-[#222A2F] font-semibold hover:bg-gold hover:text-[#222A2F]"
+            className="w-full border border-white/15 bg-terracotta text-[#181E22] font-semibold hover:bg-[#CC725B] hover:text-[#181E22] dark:bg-terracotta dark:text-[#181E22] dark:hover:bg-[#CC725B]"
           >
             Register for a workshop
           </Button>

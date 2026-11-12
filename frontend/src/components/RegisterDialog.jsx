@@ -282,28 +282,28 @@ export default function RegisterDialog({ workshop, user, onClose, onReserved }) 
       onClick={(event) => {
         if (event.target === ref.current) onClose();
       }}
-      className="m-auto max-h-[calc(100dvh-2rem)] w-[calc(100vw-2rem)] max-w-[34rem] overflow-y-auto rounded-3xl border border-sage/45 border-t-4 border-t-terracotta bg-brand-ivory p-0 text-charcoal shadow-2xl backdrop:bg-charcoal/55 backdrop:backdrop-blur-xs"
+      className="m-auto max-h-[calc(100dvh-2rem)] w-[calc(100vw-2rem)] max-w-[34rem] overflow-y-auto rounded-3xl border border-sage/45 border-t-4 border-t-terracotta bg-brand-ivory p-0 text-charcoal shadow-2xl backdrop:bg-charcoal/55 backdrop:backdrop-blur-xs dark:border-white/15 dark:border-t-terracotta dark:bg-[#21292E] dark:text-brand-ivory dark:backdrop:bg-black/70"
     >
       {workshop && (
         <div className="p-5 sm:p-10">
-          <p className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.2em] text-sage-dark">
+          <p className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.2em] text-sage-dark dark:text-sage">
             <span className="h-px w-5 bg-terracotta" aria-hidden="true" />
             Reserve your place
           </p>
-          <h3 id="register-title" className="mt-3 break-words text-3xl font-medium text-brand-blue">
+          <h3 id="register-title" className="mt-3 break-words text-3xl font-medium text-brand-blue dark:text-[#96B7DA]">
             {workshop.title}
           </h3>
-          <p className="mt-2 text-charcoal/80">
+          <p className="mt-2 text-charcoal/80 dark:text-brand-ivory/80">
             {formatWorkshopDate(workshop.date)} · {workshop.start}–{workshop.end}
           </p>
-          <div className="mt-5 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-sage/40 bg-white p-4 shadow-xs">
+          <div className="mt-5 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-sage/40 bg-white p-4 shadow-xs dark:border-white/10 dark:bg-[#181E22]">
             <div className="flex items-baseline gap-2">
-              <span className="text-sm text-charcoal/70">Session price</span>
-              <strong className="font-serif text-2xl font-semibold text-brand-blue">{formatINR(workshop.price)}</strong>
+              <span className="text-sm text-charcoal/70 dark:text-brand-ivory/70">Session price</span>
+              <strong className="font-serif text-2xl font-semibold text-brand-blue dark:text-[#96B7DA]">{formatINR(workshop.price)}</strong>
             </div>
             <div className="flex items-center gap-2">
-              <span className="text-sm text-charcoal/70">Available seats</span>
-              <strong className="rounded-full border border-sage/50 bg-sage/20 px-2.5 py-0.5 text-sm font-semibold text-sage-dark">
+              <span className="text-sm text-charcoal/70 dark:text-brand-ivory/70">Available seats</span>
+              <strong className="rounded-full border border-sage/50 bg-sage/20 px-2.5 py-0.5 text-sm font-semibold text-sage-dark dark:border-sage/35 dark:bg-sage/15 dark:text-sage">
                 {workshop.availableSeats}
               </strong>
             </div>
@@ -311,20 +311,20 @@ export default function RegisterDialog({ workshop, user, onClose, onReserved }) 
 
           {reservation ? (
             <div className="mt-6" role="status">
-              <h4 className="text-xl font-medium text-brand-blue">
+              <h4 className="text-xl font-medium text-brand-blue dark:text-[#96B7DA]">
                 {paymentConfirmed ? "Booking confirmed" : "Your seat is temporarily reserved"}
               </h4>
               <p
                 className={`mt-3 rounded-2xl border p-4 leading-relaxed ${
                   paymentConfirmed
-                    ? "border-sage/60 bg-sage/20 text-charcoal"
-                    : "border-gold/70 bg-gold/20 text-charcoal"
+                    ? "border-sage/60 bg-sage/20 text-charcoal dark:border-sage/40 dark:bg-sage/15 dark:text-brand-ivory"
+                    : "border-gold/70 bg-gold/20 text-charcoal dark:border-gold/45 dark:bg-gold/15 dark:text-brand-ivory"
                 }`}
               >
                 {paymentConfirmed ? paymentMessage : (
                   <>
                     This reservation expires in{" "}
-                    <strong className="font-semibold text-brand-blue tabular-nums">
+                    <strong className="font-semibold text-brand-blue tabular-nums dark:text-gold">
                       {Math.floor(remainingSeconds / 60)}:
                       {String(remainingSeconds % 60).padStart(2, "0")}
                     </strong>
@@ -333,14 +333,14 @@ export default function RegisterDialog({ workshop, user, onClose, onReserved }) 
                 )}
               </p>
               {paymentMessage && !paymentConfirmed && (
-                <p className="mt-3 rounded-xl border border-brand-blue/20 bg-white p-3.5 text-sm text-charcoal">{paymentMessage}</p>
+                <p className="mt-3 rounded-xl border border-brand-blue/20 bg-white p-3.5 text-sm text-charcoal dark:border-white/15 dark:bg-[#181E22] dark:text-brand-ivory">{paymentMessage}</p>
               )}
               {remainingSeconds === 0 && !paymentConfirmed && (
-                <p className="mt-3 rounded-xl border border-terracotta/50 bg-terracotta/12 p-3 text-sm text-terracotta-dark">
+                <p className="mt-3 rounded-xl border border-terracotta/50 bg-terracotta/12 p-3 text-sm text-terracotta-dark dark:border-terracotta/45 dark:bg-terracotta/15 dark:text-[#F0A592]">
                   The reservation has expired. Close this window and select the session again.
                 </p>
               )}
-              <p className="mt-3 break-all text-xs text-charcoal/60">
+              <p className="mt-3 break-all text-xs text-charcoal/60 dark:text-brand-ivory/55">
                 Reservation ID: {reservation.bookingId}
               </p>
               <div className="mt-8 flex flex-wrap gap-3">
@@ -361,7 +361,7 @@ export default function RegisterDialog({ workshop, user, onClose, onReserved }) 
             </div>
           ) : !user ? (
             <>
-              <p className="mt-5 leading-relaxed text-charcoal/85">
+              <p className="mt-5 leading-relaxed text-charcoal/85 dark:text-brand-ivory/80">
                 Sign in with Google before reserving. Your selected session will be waiting when
                 you return.
               </p>
@@ -369,7 +369,7 @@ export default function RegisterDialog({ workshop, user, onClose, onReserved }) 
                 <Link
                   to="/login"
                   state={{ from: { pathname: "/", hash: "#workshops" } }}
-                  className="inline-flex items-center justify-center rounded-full bg-brand-blue px-6 py-3 text-sm font-medium text-white shadow-sm hover:bg-brand-blue-dark"
+                  className="inline-flex items-center justify-center rounded-full bg-brand-blue px-6 py-3 text-sm font-medium text-white shadow-sm hover:bg-brand-blue-dark dark:bg-[#5B81A8] dark:hover:bg-[#6E93B8]"
                 >
                   Sign in with Google
                 </Link>
@@ -378,11 +378,11 @@ export default function RegisterDialog({ workshop, user, onClose, onReserved }) 
             </>
           ) : (
             <form className="mt-6 space-y-4" onSubmit={submitReservation}>
-              <p className="text-sm leading-relaxed text-charcoal/80">
+              <p className="text-sm leading-relaxed text-charcoal/80 dark:text-brand-ivory/75">
                 A seat is temporarily held while you continue. You will pay securely with Razorpay
                 after reserving.
               </p>
-              <label className="block text-sm font-medium text-charcoal">
+              <label className="block text-sm font-medium text-charcoal dark:text-brand-ivory">
                 Participant name
                 <input
                   name="fullName"
@@ -392,10 +392,10 @@ export default function RegisterDialog({ workshop, user, onClose, onReserved }) 
                   maxLength={100}
                   value={participant.fullName}
                   onChange={updateParticipant}
-                  className="mt-1 w-full rounded-xl border border-charcoal/25 bg-white px-4 py-3 font-normal text-charcoal"
+                  className="mt-1 w-full rounded-xl border border-charcoal/25 bg-white px-4 py-3 font-normal text-charcoal dark:border-white/15 dark:bg-[#181E22] dark:text-brand-ivory"
                 />
               </label>
-              <label className="block text-sm font-medium text-charcoal">
+              <label className="block text-sm font-medium text-charcoal dark:text-brand-ivory">
                 Participant email
                 <input
                   type="email"
@@ -405,10 +405,10 @@ export default function RegisterDialog({ workshop, user, onClose, onReserved }) 
                   maxLength={254}
                   value={participant.email}
                   onChange={updateParticipant}
-                  className="mt-1 w-full rounded-xl border border-charcoal/25 bg-white px-4 py-3 font-normal text-charcoal"
+                  className="mt-1 w-full rounded-xl border border-charcoal/25 bg-white px-4 py-3 font-normal text-charcoal dark:border-white/15 dark:bg-[#181E22] dark:text-brand-ivory"
                 />
               </label>
-              <label className="block text-sm font-medium text-charcoal">
+              <label className="block text-sm font-medium text-charcoal dark:text-brand-ivory">
                 Participant phone
                 <input
                   type="tel"
@@ -420,11 +420,11 @@ export default function RegisterDialog({ workshop, user, onClose, onReserved }) 
                   pattern="[0-9\\s\\(\\)\\+\\-]+"
                   value={participant.phone}
                   onChange={updateParticipant}
-                  className="mt-1 w-full rounded-xl border border-charcoal/25 bg-white px-4 py-3 font-normal text-charcoal"
+                  className="mt-1 w-full rounded-xl border border-charcoal/25 bg-white px-4 py-3 font-normal text-charcoal dark:border-white/15 dark:bg-[#181E22] dark:text-brand-ivory"
                 />
               </label>
               {error && (
-                <p className="rounded-xl border border-terracotta/50 bg-terracotta/10 p-3 text-sm text-terracotta-dark" role="alert">
+                <p className="rounded-xl border border-terracotta/50 bg-terracotta/10 p-3 text-sm text-terracotta-dark dark:border-terracotta/45 dark:bg-terracotta/15 dark:text-[#F0A592]" role="alert">
                   {error}
                 </p>
               )}
