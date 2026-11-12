@@ -3,35 +3,58 @@ import { NAV_LINKS, SITE } from "../data/siteData.js";
 
 export default function Footer() {
   return (
-    <footer className="bg-brand-blue px-6 py-14 text-white">
+    <footer className="border-t-2 border-gold/40 bg-brand-blue px-6 py-14 text-white">
       <div className="mx-auto grid max-w-6xl gap-10 md:grid-cols-3">
         <div>
           <div className="flex items-center gap-3">
-            <img src={logo} alt="" className="h-12 w-12 rounded-xl object-cover" />
-            <span className="font-serif text-2xl">Mend and Blend</span>
+            <img src={logo} alt="" className="h-12 w-12 rounded-xl object-cover ring-1 ring-white/25" />
+            <span className="font-serif text-2xl font-medium tracking-wide text-white">Mend and Blend</span>
           </div>
-          <p className="mt-4 max-w-xs text-sm leading-relaxed text-white/80">
+          <p className="mt-4 max-w-xs text-sm leading-relaxed text-brand-ivory/85">
             Psychology-inspired workshops for self-discovery, emotional wellness and human connection.
           </p>
         </div>
         <nav aria-label="Footer">
-          <ul className="space-y-2 text-sm">
+          <p className="mb-3 text-xs font-semibold uppercase tracking-[0.18em] text-gold">
+            Explore
+          </p>
+          <ul className="space-y-2.5 text-sm">
             {NAV_LINKS.map((l) => (
               <li key={l.href}>
-                <a href={l.href} className="text-white/80 hover:text-white">{l.label}</a>
+                <a
+                  href={l.href}
+                  className="inline-block text-brand-ivory/90 underline-offset-4 hover:text-gold hover:underline"
+                >
+                  {l.label}
+                </a>
               </li>
             ))}
           </ul>
         </nav>
-        <div className="text-sm leading-relaxed text-white/80">
-          <p>{SITE.phoneDisplay}</p>
-          <p className="break-all">{SITE.email}</p>
-          <p className="mt-2">Nungambakkam, Chennai</p>
+        <div className="text-sm leading-relaxed text-brand-ivory/90">
+          <p className="mb-3 text-xs font-semibold uppercase tracking-[0.18em] text-gold">
+            Visit &amp; Connect
+          </p>
+          <p>
+            <a href={`tel:${SITE.phoneTel}`} className="underline-offset-4 hover:text-gold hover:underline">
+              {SITE.phoneDisplay}
+            </a>
+          </p>
+          <p className="mt-1 break-all">
+            <a href={`mailto:${SITE.email}`} className="underline-offset-4 hover:text-gold hover:underline">
+              {SITE.email}
+            </a>
+          </p>
+          <p className="mt-2 text-brand-ivory/80">Nungambakkam, Chennai</p>
         </div>
       </div>
-      <p className="mx-auto mt-10 max-w-6xl border-t border-white/20 pt-6 text-xs text-white/70">
-        © {new Date().getFullYear()} Mend and Blend. All rights reserved.
-      </p>
+      <div className="mx-auto mt-10 flex max-w-6xl flex-wrap items-center justify-between gap-3 border-t border-white/15 pt-6 text-xs text-brand-ivory/75">
+        <p>© {new Date().getFullYear()} Mend and Blend. All rights reserved.</p>
+        <p className="inline-flex items-center gap-2 text-brand-ivory/80">
+          <span className="h-1.5 w-1.5 rounded-full bg-terracotta" aria-hidden="true" />
+          Crafted with care in Chennai
+        </p>
+      </div>
     </footer>
   );
 }

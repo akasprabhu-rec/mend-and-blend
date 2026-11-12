@@ -59,19 +59,24 @@ export default function AdminTicketScanner({ onScan }) {
   }, [scanning, onScan]);
 
   return (
-    <section className="min-w-0 rounded-[2rem] border border-rose/30 bg-white/80 p-5 shadow-sm sm:p-8">
-      <p className="text-xs font-semibold uppercase tracking-[0.18em] text-olive-dark">
+    <section className="min-w-0 rounded-3xl border border-sage/45 bg-white p-6 shadow-sm sm:p-8">
+      <p className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.18em] text-sage-dark">
+        <span className="h-px w-4 bg-terracotta" aria-hidden="true" />
         Entry desk
       </p>
-      <h2 className="mt-2 text-2xl font-medium">Scan a workshop ticket</h2>
+      <h2 className="mt-2 text-2xl font-medium text-brand-blue">Scan a workshop ticket</h2>
       <p className="mt-2 text-sm leading-relaxed text-charcoal/75">
         Scanning checks the paid booking and redeems a valid ticket once. A second scan will be
         marked as already used.
       </p>
-      {error && <p className="mt-4 text-sm text-red-800" role="alert">{error}</p>}
+      {error && (
+        <p className="mt-4 rounded-xl border border-terracotta/50 bg-terracotta/10 p-3 text-sm text-terracotta-dark" role="alert">
+          {error}
+        </p>
+      )}
       <div
         id={elementId}
-        className={`mt-5 max-w-full overflow-hidden rounded-2xl ${scanning ? "min-h-64" : "hidden"}`}
+        className={`mt-5 max-w-full overflow-hidden rounded-2xl border border-sage/35 ${scanning ? "min-h-64" : "hidden"}`}
       />
       <button
         type="button"
@@ -79,7 +84,7 @@ export default function AdminTicketScanner({ onScan }) {
           setError("");
           setScanning((current) => !current);
         }}
-        className="mt-5 rounded-full border border-charcoal/40 px-5 py-3 text-sm font-medium hover:bg-charcoal hover:text-ivory"
+        className="mt-5 rounded-full bg-brand-blue px-5 py-3 text-sm font-medium text-white shadow-sm hover:bg-brand-blue-dark"
       >
         {scanning ? "Stop camera" : "Open camera scanner"}
       </button>

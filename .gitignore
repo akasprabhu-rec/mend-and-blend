@@ -9,3 +9,4 @@ build/
 .vscode/
 serviceAccountKey.json
 *-firebase-adminsdk-*.json
+graphify-out/

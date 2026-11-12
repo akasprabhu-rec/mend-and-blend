@@ -2,17 +2,24 @@
 
 @theme static {
   --color-brand-blue: #405F80;
+  --color-brand-blue-dark: #324C67;
   --color-brand-ivory: #F8F7F5;
   --color-brand-white: #FFFFFF;
 
+  --color-terracotta: #D9826B;
+  --color-terracotta-dark: #B55B44;
+  --color-sage: #A8B9A0;
+  --color-sage-dark: #4E6048;
+  --color-gold: #E5BD79;
+  --color-gold-dark: #8A6424;
+  --color-charcoal: #303A40;
+
   --color-ivory: var(--color-brand-ivory);
-  --color-sage: var(--color-brand-blue);
-  --color-olive: var(--color-brand-blue);
-  --color-olive-dark: var(--color-brand-blue);
-  --color-rose: var(--color-brand-blue);
+  --color-olive: #6D8065;
+  --color-olive-dark: var(--color-sage-dark);
+  --color-rose: var(--color-terracotta);
   --color-lavender: var(--color-brand-blue);
-  --color-lavender-dark: var(--color-brand-blue);
-  --color-charcoal: var(--color-brand-blue);
+  --color-lavender-dark: var(--color-terracotta-dark);
 
   --font-serif: "Cormorant Garamond", Georgia, serif;
   --font-sans: "DM Sans", system-ui, sans-serif;
@@ -29,9 +36,13 @@
   html { scroll-behavior: smooth; }
   body {
     background-color: var(--color-brand-ivory);
-    color: var(--color-brand-blue);
+    color: var(--color-charcoal);
     font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;
+  }
+  ::selection {
+    background-color: rgb(229 189 121 / 40%);
+    color: var(--color-charcoal);
   }
   img, video, canvas, svg { max-width: 100%; }
   input, select, textarea { max-width: 100%; min-height: 2.75rem; font-size: 16px; }
@@ -41,11 +52,17 @@
   section[id] { scroll-margin-top: 4.5rem; }
   :focus-visible { outline: 2px solid var(--color-brand-blue); outline-offset: 3px; }
   input, select, textarea {
-    border-color: rgb(64 95 128 / 22%);
+    border-color: rgb(48 58 64 / 22%);
     background-color: var(--color-brand-white);
-    color: var(--color-brand-blue);
+    color: var(--color-charcoal);
+    transition: border-color 180ms ease, box-shadow 180ms ease;
   }
-  input::placeholder, textarea::placeholder { color: rgb(64 95 128 / 65%); }
+  input:focus, select:focus, textarea:focus {
+    border-color: var(--color-brand-blue);
+    box-shadow: 0 0 0 3px rgb(64 95 128 / 12%);
+    outline: none;
+  }
+  input::placeholder, textarea::placeholder { color: rgb(48 58 64 / 52%); }
   button, a { -webkit-tap-highlight-color: transparent; }
   button:not(:disabled), a {
     transition: color 180ms ease, background-color 180ms ease, border-color 180ms ease,
@@ -66,18 +83,19 @@
 .nav-link::after {
   position: absolute;
   right: 0;
-  bottom: -0.3rem;
+  bottom: -0.35rem;
   left: 0;
-  height: 1px;
+  height: 2px;
+  border-radius: 9999px;
   content: "";
-  background: currentColor;
+  background: var(--color-gold);
   transform: scaleX(0);
   transform-origin: left;
-  transition: transform 180ms ease;
+  transition: transform 200ms ease;
 }
 .nav-link:hover::after,
 .nav-link-active::after { transform: scaleX(1); }
-.nav-link-active { color: white; }
+.nav-link-active { color: #FFFFFF; }
 
 .mobile-menu-enter {
   transform-origin: top;

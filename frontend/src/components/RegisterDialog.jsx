@@ -282,48 +282,61 @@ export default function RegisterDialog({ workshop, user, onClose, onReserved }) 
       onClick={(event) => {
         if (event.target === ref.current) onClose();
       }}
-      className="m-auto max-h-[calc(100dvh-2rem)] w-[calc(100vw-2rem)] max-w-[34rem] overflow-y-auto rounded-[2rem] bg-white p-0 text-charcoal shadow-2xl backdrop:bg-charcoal/50"
+      className="m-auto max-h-[calc(100dvh-2rem)] w-[calc(100vw-2rem)] max-w-[34rem] overflow-y-auto rounded-3xl border border-sage/45 border-t-4 border-t-terracotta bg-brand-ivory p-0 text-charcoal shadow-2xl backdrop:bg-charcoal/55 backdrop:backdrop-blur-xs"
     >
       {workshop && (
         <div className="p-5 sm:p-10">
-          <p className="text-sm font-medium uppercase tracking-[0.2em] text-olive-dark">
+          <p className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.2em] text-sage-dark">
+            <span className="h-px w-5 bg-terracotta" aria-hidden="true" />
             Reserve your place
           </p>
-          <h3 id="register-title" className="mt-3 break-words text-3xl font-medium">
+          <h3 id="register-title" className="mt-3 break-words text-3xl font-medium text-brand-blue">
             {workshop.title}
           </h3>
           <p className="mt-2 text-charcoal/80">
             {formatWorkshopDate(workshop.date)} · {workshop.start}–{workshop.end}
           </p>
-          <div className="mt-5 flex flex-wrap justify-between gap-2 rounded-2xl bg-white/70 p-4">
-            <span>Session price</span>
-            <strong>{formatINR(workshop.price)}</strong>
-            <span>Available seats</span>
-            <strong>{workshop.availableSeats}</strong>
+          <div className="mt-5 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-sage/40 bg-white p-4 shadow-xs">
+            <div className="flex items-baseline gap-2">
+              <span className="text-sm text-charcoal/70">Session price</span>
+              <strong className="font-serif text-2xl font-semibold text-brand-blue">{formatINR(workshop.price)}</strong>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-charcoal/70">Available seats</span>
+              <strong className="rounded-full border border-sage/50 bg-sage/20 px-2.5 py-0.5 text-sm font-semibold text-sage-dark">
+                {workshop.availableSeats}
+              </strong>
+            </div>
           </div>
 
           {reservation ? (
             <div className="mt-6" role="status">
-              <h4 className="text-xl font-medium">
+              <h4 className="text-xl font-medium text-brand-blue">
                 {paymentConfirmed ? "Booking confirmed" : "Your seat is temporarily reserved"}
               </h4>
-              <p className="mt-3 leading-relaxed">
+              <p
+                className={`mt-3 rounded-2xl border p-4 leading-relaxed ${
+                  paymentConfirmed
+                    ? "border-sage/60 bg-sage/20 text-charcoal"
+                    : "border-gold/70 bg-gold/20 text-charcoal"
+                }`}
+              >
                 {paymentConfirmed ? paymentMessage : (
                   <>
                     This reservation expires in{" "}
-                <strong>
-                  {Math.floor(remainingSeconds / 60)}:
-                  {String(remainingSeconds % 60).padStart(2, "0")}
-                </strong>
+                    <strong className="font-semibold text-brand-blue tabular-nums">
+                      {Math.floor(remainingSeconds / 60)}:
+                      {String(remainingSeconds % 60).padStart(2, "0")}
+                    </strong>
                     . Complete payment before the timer ends to confirm your booking.
                   </>
                 )}
               </p>
               {paymentMessage && !paymentConfirmed && (
-                <p className="mt-3 rounded-xl bg-white/70 p-3 text-sm">{paymentMessage}</p>
+                <p className="mt-3 rounded-xl border border-brand-blue/20 bg-white p-3.5 text-sm text-charcoal">{paymentMessage}</p>
               )}
               {remainingSeconds === 0 && !paymentConfirmed && (
-                <p className="mt-3 text-sm text-red-800">
+                <p className="mt-3 rounded-xl border border-terracotta/50 bg-terracotta/12 p-3 text-sm text-terracotta-dark">
                   The reservation has expired. Close this window and select the session again.
                 </p>
               )}
@@ -339,7 +352,7 @@ export default function RegisterDialog({ workshop, user, onClose, onReserved }) 
                     </Button>
                   )}
                 {!paymentMessage && remainingSeconds > 0 && (
-                  <Button type="button" onClick={startPayment} disabled={submitting}>
+                  <Button type="button" variant="accent" onClick={startPayment} disabled={submitting}>
                     {submitting ? "Opening checkout…" : `Pay ${formatINR(reservation.amount)}`}
                   </Button>
                 )}
@@ -348,7 +361,7 @@ export default function RegisterDialog({ workshop, user, onClose, onReserved }) 
             </div>
           ) : !user ? (
             <>
-              <p className="mt-5 leading-relaxed">
+              <p className="mt-5 leading-relaxed text-charcoal/85">
                 Sign in with Google before reserving. Your selected session will be waiting when
                 you return.
               </p>
@@ -356,7 +369,7 @@ export default function RegisterDialog({ workshop, user, onClose, onReserved }) 
                 <Link
                   to="/login"
                   state={{ from: { pathname: "/", hash: "#workshops" } }}
-                  className="inline-flex items-center justify-center rounded-full bg-brand-blue px-6 py-3 text-sm font-medium text-white hover:bg-brand-blue/90"
+                  className="inline-flex items-center justify-center rounded-full bg-brand-blue px-6 py-3 text-sm font-medium text-white shadow-sm hover:bg-brand-blue-dark"
                 >
                   Sign in with Google
                 </Link>
@@ -365,11 +378,11 @@ export default function RegisterDialog({ workshop, user, onClose, onReserved }) 
             </>
           ) : (
             <form className="mt-6 space-y-4" onSubmit={submitReservation}>
-              <p className="text-sm leading-relaxed">
+              <p className="text-sm leading-relaxed text-charcoal/80">
                 A seat is temporarily held while you continue. You will pay securely with Razorpay
                 after reserving.
               </p>
-              <label className="block text-sm font-medium">
+              <label className="block text-sm font-medium text-charcoal">
                 Participant name
                 <input
                   name="fullName"
@@ -379,10 +392,10 @@ export default function RegisterDialog({ workshop, user, onClose, onReserved }) 
                   maxLength={100}
                   value={participant.fullName}
                   onChange={updateParticipant}
-                  className="mt-1 w-full rounded-xl border border-charcoal/30 bg-white px-4 py-3 font-normal"
+                  className="mt-1 w-full rounded-xl border border-charcoal/25 bg-white px-4 py-3 font-normal text-charcoal"
                 />
               </label>
-              <label className="block text-sm font-medium">
+              <label className="block text-sm font-medium text-charcoal">
                 Participant email
                 <input
                   type="email"
@@ -392,10 +405,10 @@ export default function RegisterDialog({ workshop, user, onClose, onReserved }) 
                   maxLength={254}
                   value={participant.email}
                   onChange={updateParticipant}
-                  className="mt-1 w-full rounded-xl border border-charcoal/30 bg-white px-4 py-3 font-normal"
+                  className="mt-1 w-full rounded-xl border border-charcoal/25 bg-white px-4 py-3 font-normal text-charcoal"
                 />
               </label>
-              <label className="block text-sm font-medium">
+              <label className="block text-sm font-medium text-charcoal">
                 Participant phone
                 <input
                   type="tel"
@@ -407,12 +420,16 @@ export default function RegisterDialog({ workshop, user, onClose, onReserved }) 
                   pattern="[0-9\\s\\(\\)\\+\\-]+"
                   value={participant.phone}
                   onChange={updateParticipant}
-                  className="mt-1 w-full rounded-xl border border-charcoal/30 bg-white px-4 py-3 font-normal"
+                  className="mt-1 w-full rounded-xl border border-charcoal/25 bg-white px-4 py-3 font-normal text-charcoal"
                 />
               </label>
-              {error && <p className="text-sm text-red-800" role="alert">{error}</p>}
+              {error && (
+                <p className="rounded-xl border border-terracotta/50 bg-terracotta/10 p-3 text-sm text-terracotta-dark" role="alert">
+                  {error}
+                </p>
+              )}
               <div className="flex flex-wrap gap-3 pt-2">
-                <Button type="submit" disabled={submitting || workshop.availableSeats === 0}>
+                <Button type="submit" variant="accent" disabled={submitting || workshop.availableSeats === 0}>
                   {submitting ? "Reserving…" : "Reserve seat"}
                 </Button>
                 <Button variant="secondary" onClick={onClose}>Cancel</Button>

@@ -25,8 +25,8 @@ export const NAV_LINKS = [
 ];
 
 export const FOUNDERS = [
-  { name: "R Dhamyanthi", initials: "RD", tone: "bg-brand-blue text-white" },
-  { name: "S Catherine Mercy", initials: "SC", tone: "bg-brand-blue text-white" },
+  { name: "R Dhamyanthi", initials: "RD", tone: "bg-brand-blue text-white ring-4 ring-gold/30" },
+  { name: "S Catherine Mercy", initials: "SC", tone: "bg-terracotta-dark text-white ring-4 ring-sage/40" },
 ];
 export const FOUNDER_BIO_PLACEHOLDER = "Bio and photo to be added.";
 

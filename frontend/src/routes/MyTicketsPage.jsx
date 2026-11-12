@@ -104,115 +104,128 @@ export default function MyTicketsPage() {
   return (
     <>
       <Navbar />
-      <main className="mx-auto min-h-screen max-w-5xl px-6 py-12 sm:py-16">
-      <header className="mt-8">
-        <p className="text-sm font-medium uppercase tracking-[0.2em] text-olive-dark">
-          Customer account
-        </p>
-        <h1 className="mt-3 text-4xl font-medium">My tickets</h1>
-        <p className="mt-3 text-charcoal/75">Signed in as {user.email || user.displayName}.</p>
-      </header>
+      <div className="min-h-screen bg-gradient-to-b from-brand-ivory via-sage/12 to-brand-ivory">
+        <main className="mx-auto max-w-5xl px-6 py-12 sm:py-16">
+          <header className="mt-8">
+            <p className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.2em] text-sage-dark">
+              <span className="h-px w-5 bg-terracotta" aria-hidden="true" />
+              Customer account
+            </p>
+            <h1 className="mt-3 text-4xl font-medium text-brand-blue">My tickets</h1>
+            <p className="mt-3 text-charcoal/75">Signed in as {user.email || user.displayName}.</p>
+          </header>
 
-      {profileError && (
-        <p className="mt-6 rounded-2xl border border-rose p-4 text-sm" role="alert">
-          Your profile could not be synced to Firestore: {profileError}
-        </p>
-      )}
-      {error && <p className="mt-6 text-sm text-red-800" role="alert">{error}</p>}
-      {downloadError && (
-        <p className="mt-6 text-sm text-red-800" role="alert">{downloadError}</p>
-      )}
-      {loading && <p className="mt-8" role="status">Loading your tickets…</p>}
-      {!loading && !error && tickets.length === 0 && (
-        <p className="mt-8 rounded-2xl bg-white/70 p-6">
-          You do not have any tickets yet. After your payment is verified, your workshop ticket
-          will appear here.
-        </p>
-      )}
+          {profileError && (
+            <p className="mt-6 rounded-2xl border border-terracotta/50 bg-terracotta/10 p-4 text-sm text-terracotta-dark" role="alert">
+              Your profile could not be synced to Firestore: {profileError}
+            </p>
+          )}
+          {error && (
+            <p className="mt-6 rounded-2xl border border-terracotta/50 bg-terracotta/10 p-4 text-sm text-terracotta-dark" role="alert">
+              {error}
+            </p>
+          )}
+          {downloadError && (
+            <p className="mt-6 rounded-2xl border border-terracotta/50 bg-terracotta/10 p-4 text-sm text-terracotta-dark" role="alert">
+              {downloadError}
+            </p>
+          )}
+          {loading && <p className="mt-8 text-charcoal/75" role="status">Loading your tickets…</p>}
+          {!loading && !error && tickets.length === 0 && (
+            <p className="mt-8 rounded-2xl border border-sage/40 bg-white p-6 text-charcoal/80 shadow-xs">
+              You do not have any tickets yet. After your payment is verified, your workshop ticket
+              will appear here.
+            </p>
+          )}
 
-      <ul className="mt-8 grid gap-6">
-        {tickets.map((ticket) => {
-          const valid = ticket.isValid === true && ticket.status === "valid";
-          return (
-            <li
-              key={ticket.id}
-              className="overflow-hidden rounded-[2rem] border border-rose/30 bg-white/80 shadow-sm"
-            >
-              <div className="grid gap-6 p-6 sm:grid-cols-[1fr_auto] sm:items-center sm:p-8">
-                <div>
-                  <div className="flex flex-wrap items-center gap-3">
-                    <p className="text-xs font-semibold uppercase tracking-[0.18em] text-olive-dark">
-                      Mend and Blend
-                    </p>
-                    <span
-                      className={`rounded-full px-3 py-1 text-xs font-semibold ${
-                        valid ? "bg-brand-blue text-white" : "bg-brand-blue/10 text-brand-blue"
-                      }`}
-                    >
-                      {valid ? "Valid ticket" : "Not valid"}
-                    </span>
+          <ul className="mt-8 grid gap-6">
+            {tickets.map((ticket) => {
+              const valid = ticket.isValid === true && ticket.status === "valid";
+              return (
+                <li
+                  key={ticket.id}
+                  className={`overflow-hidden rounded-3xl border border-charcoal/10 border-t-4 bg-white shadow-sm transition-shadow hover:shadow-md ${
+                    valid ? "border-t-brand-blue" : "border-t-charcoal/30"
+                  }`}
+                >
+                  <div className="grid gap-6 p-6 sm:grid-cols-[1fr_auto] sm:items-center sm:p-8">
+                    <div>
+                      <div className="flex flex-wrap items-center gap-3">
+                        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-sage-dark">
+                          Mend and Blend
+                        </p>
+                        <span
+                          className={`rounded-full border px-3 py-1 text-xs font-semibold ${
+                            valid
+                              ? "border-sage/60 bg-sage/30 text-sage-dark"
+                              : "border-terracotta/45 bg-terracotta/15 text-terracotta-dark"
+                          }`}
+                        >
+                          {valid ? "Valid ticket" : "Not valid"}
+                        </span>
+                      </div>
+                      <h2 className="mt-3 text-3xl font-medium text-brand-blue">
+                        {ticket.workshopName || "Workshop ticket"}
+                      </h2>
+                      <p className="mt-2 text-sm text-charcoal/75">
+                        For {ticket.customerName || user.displayName || "Guest"}
+                      </p>
+                      <dl className="mt-5 grid gap-4 border-t border-charcoal/8 pt-5 text-sm sm:grid-cols-2">
+                        <div>
+                          <dt className="text-xs font-semibold uppercase tracking-wider text-sage-dark">Date</dt>
+                          <dd className="mt-1 font-medium text-charcoal">{formatDate(ticket.sessionDate)}</dd>
+                        </div>
+                        <div>
+                          <dt className="text-xs font-semibold uppercase tracking-wider text-sage-dark">Time</dt>
+                          <dd className="mt-1 font-medium text-charcoal">
+                            {[ticket.start, ticket.end].filter(Boolean).join(" - ") ||
+                              "Time to be confirmed"}
+                          </dd>
+                        </div>
+                        <div className="sm:col-span-2">
+                          <dt className="text-xs font-semibold uppercase tracking-wider text-sage-dark">Venue</dt>
+                          <dd className="mt-1 text-charcoal/85">{ticket.venue || "Venue details to be confirmed"}</dd>
+                        </div>
+                      </dl>
+                      <p className="mt-5 text-xs text-charcoal/60">
+                        Issued{" "}
+                        {ticket.issuedAt?.toDate
+                          ? new Intl.DateTimeFormat("en-IN", { dateStyle: "medium" }).format(
+                              ticket.issuedAt.toDate(),
+                            )
+                          : "after payment verification"}
+                      </p>
+                      <button
+                        type="button"
+                        onClick={() => handleDownload(ticket)}
+                        disabled={!ticket.qrToken || downloading === ticket.id}
+                        className="mt-6 rounded-full bg-brand-blue px-5 py-3 text-sm font-medium text-white shadow-sm transition hover:bg-brand-blue-dark disabled:cursor-not-allowed disabled:opacity-50"
+                      >
+                        {downloading === ticket.id ? "Preparing PDF…" : "Download ticket PDF"}
+                      </button>
+                    </div>
+
+                    <div className="mx-auto flex min-h-44 min-w-44 flex-col items-center justify-center rounded-2xl border border-sage/40 bg-brand-ivory p-4">
+                      {qrCodes[ticket.id] ? (
+                        <img
+                          src={qrCodes[ticket.id]}
+                          alt={`Secure entry QR code for ${ticket.workshopName || "your workshop"}`}
+                          className="h-36 w-36 rounded-lg"
+                        />
+                      ) : (
+                        <p className="max-w-36 text-center text-xs text-charcoal/60">
+                          {ticket.qrToken ? "Preparing secure QR code…" : "QR code unavailable"}
+                        </p>
+                      )}
+                      <p className="mt-2 text-xs font-medium text-sage-dark">Show at entry</p>
+                    </div>
                   </div>
-                  <h2 className="mt-3 text-3xl font-medium">
-                    {ticket.workshopName || "Workshop ticket"}
-                  </h2>
-                  <p className="mt-2 text-sm text-charcoal/75">
-                    For {ticket.customerName || user.displayName || "Guest"}
-                  </p>
-                  <dl className="mt-5 grid gap-4 text-sm sm:grid-cols-2">
-                    <div>
-                      <dt className="font-semibold text-olive-dark">Date</dt>
-                      <dd className="mt-1">{formatDate(ticket.sessionDate)}</dd>
-                    </div>
-                    <div>
-                      <dt className="font-semibold text-olive-dark">Time</dt>
-                      <dd className="mt-1">
-                        {[ticket.start, ticket.end].filter(Boolean).join(" - ") ||
-                          "Time to be confirmed"}
-                      </dd>
-                    </div>
-                    <div className="sm:col-span-2">
-                      <dt className="font-semibold text-olive-dark">Venue</dt>
-                      <dd className="mt-1">{ticket.venue || "Venue details to be confirmed"}</dd>
-                    </div>
-                  </dl>
-                  <p className="mt-5 text-xs text-charcoal/60">
-                    Issued{" "}
-                    {ticket.issuedAt?.toDate
-                      ? new Intl.DateTimeFormat("en-IN", { dateStyle: "medium" }).format(
-                          ticket.issuedAt.toDate(),
-                        )
-                      : "after payment verification"}
-                  </p>
-                  <button
-                    type="button"
-                    onClick={() => handleDownload(ticket)}
-                    disabled={!ticket.qrToken || downloading === ticket.id}
-                    className="mt-6 rounded-full bg-brand-blue px-5 py-3 text-sm font-medium text-white transition hover:bg-brand-blue/90 disabled:cursor-not-allowed disabled:opacity-50"
-                  >
-                    {downloading === ticket.id ? "Preparing PDF…" : "Download ticket PDF"}
-                  </button>
-                </div>
-
-                <div className="mx-auto flex min-h-44 min-w-44 flex-col items-center justify-center rounded-3xl bg-ivory p-4">
-                  {qrCodes[ticket.id] ? (
-                    <img
-                      src={qrCodes[ticket.id]}
-                      alt={`Secure entry QR code for ${ticket.workshopName || "your workshop"}`}
-                      className="h-36 w-36"
-                    />
-                  ) : (
-                    <p className="max-w-36 text-center text-xs text-charcoal/60">
-                      {ticket.qrToken ? "Preparing secure QR code…" : "QR code unavailable"}
-                    </p>
-                  )}
-                  <p className="mt-2 text-xs text-charcoal/65">Show at entry</p>
-                </div>
-              </div>
-            </li>
-          );
-        })}
-      </ul>
-      </main>
+                </li>
+              );
+            })}
+          </ul>
+        </main>
+      </div>
     </>
   );
 }

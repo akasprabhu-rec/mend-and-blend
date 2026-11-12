@@ -38,7 +38,7 @@ export default function AdminOnlyRoute({ children }) {
   if (!access.allowed) {
     return (
       <main className="mx-auto max-w-xl px-6 py-20">
-        <p className="rounded-2xl border border-rose bg-white/80 p-5" role="alert">
+        <p className="rounded-2xl border border-terracotta/50 bg-terracotta/10 p-5 text-sm text-terracotta-dark" role="alert">
           {access.error || "Could not verify administrator access. Please try again."}
         </p>
       </main>

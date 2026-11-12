@@ -87,31 +87,34 @@ export default function Workshops() {
       eyebrow="Events"
       title="Gather, explore and grow"
       intro="Explore our published events and workshops. Each gathering offers a welcoming space for curiosity, connection and self-discovery."
-      className="bg-sage/25"
+      className="border-t border-sage/30 bg-brand-ivory"
     >
       <ul aria-label="Event dates" className="mb-10 flex flex-wrap gap-3">
         {dates.map((d) => (
           <li
             key={d.date}
-            className={`rounded-full px-5 py-2 text-sm font-medium ${
+            className={`inline-flex items-center gap-2 rounded-full px-5 py-2 text-sm font-medium transition-colors ${
               d.publishedCount > 0
-                ? "bg-charcoal text-ivory"
-                : "border border-charcoal/40 text-charcoal"
+                ? "bg-brand-blue text-white shadow-xs"
+                : "border border-sage/60 bg-sage/15 text-sage-dark"
             }`}
           >
+            {d.publishedCount > 0 && (
+              <span className="h-2 w-2 rounded-full bg-gold" aria-hidden="true" />
+            )}
             {formatWorkshopDate(d.date)}
             {d.publishedCount === 0 && " · events announced soon"}
           </li>
         ))}
       </ul>
 
-      {loading && <p role="status">Loading available events…</p>}
+      {loading && <p role="status" className="text-charcoal/75">Loading available events…</p>}
       {error && (
-        <div className="mb-6 rounded-2xl border border-rose p-4" role="alert">
+        <div className="mb-6 rounded-2xl border border-terracotta/50 bg-terracotta/10 p-4 text-charcoal" role="alert">
           <p>{error}</p>
           <button
             type="button"
-            className="mt-2 text-sm font-medium underline disabled:opacity-50"
+            className="mt-2 text-sm font-medium text-terracotta-dark underline disabled:opacity-50"
             onClick={loadWorkshops}
             disabled={loading}
           >
@@ -120,12 +123,12 @@ export default function Workshops() {
         </div>
       )}
       {!loading && !error && workshops.length === 0 && (
-        <p className="rounded-2xl bg-white/70 p-6">
+        <p className="rounded-2xl border border-sage/40 bg-white p-6 text-charcoal/80 shadow-xs">
           No events are currently published. Please check back soon.
         </p>
       )}
 
-      <div className="grid gap-6 md:grid-cols-3">
+      <div className="grid gap-7 md:grid-cols-3">
         {workshops.map((workshop, i) => (
           <Reveal key={workshop.id} delay={i * 120} className="h-full">
             <WorkshopCard
@@ -138,8 +141,13 @@ export default function Workshops() {
       </div>
 
       {user && (
-        <p className="mt-8 text-sm">
-          <Link to="/my-tickets" className="font-medium underline">View my tickets</Link>
+        <p className="mt-9 text-sm">
+          <Link
+            to="/my-tickets"
+            className="font-medium text-brand-blue underline decoration-terracotta/60 underline-offset-4 hover:text-terracotta-dark"
+          >
+            View my tickets →
+          </Link>
         </p>
       )}
       <RegisterDialog

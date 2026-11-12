@@ -18,6 +18,13 @@ const statusLabels = {
   cancelled: "Cancelled",
 };
 
+const statusBadgeStyles = {
+  confirmed: "border-sage/60 bg-sage/30 text-sage-dark",
+  pending: "border-gold/70 bg-gold/25 text-[#6B4D16]",
+  expired: "border-terracotta/45 bg-terracotta/15 text-terracotta-dark",
+  cancelled: "border-terracotta/45 bg-terracotta/15 text-terracotta-dark",
+};
+
 function formatTime(reservation) {
   return [reservation.start, reservation.end].filter(Boolean).join("–") || "Time to be confirmed";
 }
@@ -202,109 +209,124 @@ export default function MyReservationsPage() {
   return (
     <>
       <Navbar />
-      <main className="mx-auto min-h-screen max-w-5xl px-6 py-12 sm:py-16">
-        <header className="mt-8">
-          <p className="text-sm font-medium uppercase tracking-[0.2em] text-olive-dark">
-            Customer account
-          </p>
-          <h1 className="mt-3 text-4xl font-medium">My Reservations</h1>
-          <p className="mt-3 text-charcoal/75">
-            View your seat holds, continue payment, or review confirmed bookings.
-          </p>
-        </header>
+      <div className="min-h-screen bg-gradient-to-b from-brand-ivory via-sage/12 to-brand-ivory">
+        <main className="mx-auto max-w-5xl px-6 py-12 sm:py-16">
+          <header className="mt-8">
+            <p className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.2em] text-sage-dark">
+              <span className="h-px w-5 bg-terracotta" aria-hidden="true" />
+              Customer account
+            </p>
+            <h1 className="mt-3 text-4xl font-medium text-brand-blue">My Reservations</h1>
+            <p className="mt-3 text-charcoal/75">
+              View your seat holds, continue payment, or review confirmed bookings.
+            </p>
+          </header>
 
-        {error && <p className="mt-6 text-sm text-red-800" role="alert">{error}</p>}
-        {notice && <p className="mt-6 rounded-xl bg-white/80 p-4 text-sm" role="status">{notice}</p>}
-        {loading && <p className="mt-8" role="status">Loading your reservations…</p>}
-        {!loading && !error && reservations.length === 0 && (
-          <p className="mt-8 rounded-2xl bg-white/70 p-6">
-            You do not have any reservations yet. Browse{" "}
-            <Link to="/#workshops" className="font-medium underline">upcoming workshops</Link>.
-          </p>
-        )}
+          {error && (
+            <p className="mt-6 rounded-2xl border border-terracotta/50 bg-terracotta/10 p-4 text-sm text-terracotta-dark" role="alert">
+              {error}
+            </p>
+          )}
+          {notice && (
+            <p className="mt-6 rounded-2xl border border-sage/60 bg-sage/20 p-4 text-sm text-charcoal" role="status">
+              {notice}
+            </p>
+          )}
+          {loading && <p className="mt-8 text-charcoal/75" role="status">Loading your reservations…</p>}
+          {!loading && !error && reservations.length === 0 && (
+            <p className="mt-8 rounded-2xl border border-sage/40 bg-white p-6 text-charcoal/80 shadow-xs">
+              You do not have any reservations yet. Browse{" "}
+              <Link to="/#workshops" className="font-medium text-terracotta-dark underline underline-offset-4 hover:text-brand-blue">
+                upcoming workshops
+              </Link>.
+            </p>
+          )}
 
-        <ul className="mt-8 grid gap-5">
-          {reservations.map((reservation) => {
-            const status = getReservationStatus(reservation, now);
-            const active = status === "pending";
-            return (
-              <li
-                key={reservation.id}
-                className="rounded-3xl border border-brand-blue/15 bg-white/85 p-6 shadow-sm sm:p-8"
-              >
-                <div className="flex flex-wrap items-start justify-between gap-4">
-                  <div>
-                    <h2 className="text-2xl font-medium">
-                      {reservation.workshopName || "Workshop reservation"}
-                    </h2>
-                    <p className="mt-2 text-sm text-charcoal/75">
-                      {reservation.sessionDate
-                        ? formatWorkshopDate(reservation.sessionDate)
-                        : "Date to be confirmed"}{" "}
-                      · {formatTime(reservation)}
-                    </p>
-                  </div>
-                  <span
-                    className={`rounded-full px-3 py-1 text-sm font-medium ${
-                      status === "confirmed"
-                        ? "bg-brand-blue text-white"
-                        : "bg-brand-blue/10 text-brand-blue"
-                    }`}
-                  >
-                    {statusLabels[status]}
-                  </span>
-                </div>
-
-                <dl className="mt-5 grid gap-4 text-sm sm:grid-cols-2">
-                  <div>
-                    <dt className="font-semibold">Amount</dt>
-                    <dd className="mt-1">{formatINR(reservation.amount || 0)}</dd>
-                  </div>
-                  {active && reservation.expiresAt && (
+          <ul className="mt-8 grid gap-5">
+            {reservations.map((reservation) => {
+              const status = getReservationStatus(reservation, now);
+              const active = status === "pending";
+              return (
+                <li
+                  key={reservation.id}
+                  className="rounded-3xl border border-charcoal/10 bg-white p-6 shadow-sm transition-shadow hover:shadow-md sm:p-8"
+                >
+                  <div className="flex flex-wrap items-start justify-between gap-4">
                     <div>
-                      <dt className="font-semibold">Reservation expires in</dt>
-                      <dd className="mt-1 font-medium tabular-nums">
-                        {formatReservationCountdown(reservation.expiresAt, now)}
+                      <h2 className="text-2xl font-medium text-brand-blue">
+                        {reservation.workshopName || "Workshop reservation"}
+                      </h2>
+                      <p className="mt-2 text-sm text-charcoal/75">
+                        {reservation.sessionDate
+                          ? formatWorkshopDate(reservation.sessionDate)
+                          : "Date to be confirmed"}{" "}
+                        · {formatTime(reservation)}
+                      </p>
+                    </div>
+                    <span
+                      className={`rounded-full border px-3 py-1 text-xs font-semibold ${
+                        statusBadgeStyles[status] || "border-brand-blue/25 bg-brand-blue/10 text-brand-blue"
+                      }`}
+                    >
+                      {statusLabels[status]}
+                    </span>
+                  </div>
+
+                  <dl className="mt-5 grid gap-4 border-t border-charcoal/8 pt-5 text-sm sm:grid-cols-2">
+                    <div>
+                      <dt className="text-xs font-semibold uppercase tracking-wider text-sage-dark">Amount</dt>
+                      <dd className="mt-1 font-serif text-2xl font-semibold text-brand-blue">
+                        {formatINR(reservation.amount || 0)}
                       </dd>
                     </div>
-                  )}
-                </dl>
+                    {active && reservation.expiresAt && (
+                      <div>
+                        <dt className="text-xs font-semibold uppercase tracking-wider text-sage-dark">
+                          Reservation expires in
+                        </dt>
+                        <dd className="mt-1 text-lg font-semibold text-terracotta-dark tabular-nums">
+                          {formatReservationCountdown(reservation.expiresAt, now)}
+                        </dd>
+                      </div>
+                    )}
+                  </dl>
 
-                <div className="mt-6 flex flex-wrap gap-3">
-                  {active && (
-                    <>
-                      <button
-                        type="button"
-                        onClick={() => handleContinuePayment(reservation)}
-                        disabled={busyId === reservation.id}
-                        className="rounded-full bg-brand-blue px-5 py-3 text-sm font-medium text-white hover:bg-brand-blue/90 disabled:opacity-60"
+                  <div className="mt-6 flex flex-wrap gap-3">
+                    {active && (
+                      <>
+                        <button
+                          type="button"
+                          onClick={() => handleContinuePayment(reservation)}
+                          disabled={busyId === reservation.id}
+                          className="rounded-full bg-terracotta-dark px-5 py-3 text-sm font-medium text-white shadow-sm hover:bg-[#9D4D38] disabled:opacity-60"
+                        >
+                          {busyId === reservation.id ? "Opening checkout…" : "Continue Payment"}
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handleCancel(reservation)}
+                          disabled={busyId === reservation.id}
+                          className="rounded-full border border-charcoal/25 px-5 py-3 text-sm font-medium text-charcoal hover:border-terracotta/50 hover:bg-terracotta/10 hover:text-terracotta-dark disabled:opacity-60"
+                        >
+                          Cancel reservation
+                        </button>
+                      </>
+                    )}
+                    {status === "confirmed" && (
+                      <Link
+                        to="/my-tickets"
+                        className="rounded-full bg-brand-blue px-5 py-3 text-sm font-medium text-white shadow-sm hover:bg-brand-blue-dark"
                       >
-                        {busyId === reservation.id ? "Opening checkout…" : "Continue Payment"}
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => handleCancel(reservation)}
-                        disabled={busyId === reservation.id}
-                        className="rounded-full border border-brand-blue/40 px-5 py-3 text-sm font-medium hover:bg-brand-blue/5 disabled:opacity-60"
-                      >
-                        Cancel reservation
-                      </button>
-                    </>
-                  )}
-                  {status === "confirmed" && (
-                    <Link
-                      to="/my-tickets"
-                      className="rounded-full bg-brand-blue px-5 py-3 text-sm font-medium text-white hover:bg-brand-blue/90"
-                    >
-                      View My Tickets
-                    </Link>
-                  )}
-                </div>
-              </li>
-            );
-          })}
-        </ul>
-      </main>
+                        View My Tickets
+                      </Link>
+                    )}
+                  </div>
+                </li>
+              );
+            })}
+          </ul>
+        </main>
+      </div>
     </>
   );
 }

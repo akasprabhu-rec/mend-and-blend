@@ -70,38 +70,41 @@ export default function AdminLoginPage() {
   }
 
   return (
-    <main className="mx-auto flex min-h-screen max-w-xl flex-col justify-center px-6 py-16">
-      <Link to="/" className="text-sm font-medium text-olive-dark hover:underline">
-        ← Back to Mend and Blend
-      </Link>
-      <section className="mt-8 rounded-[2rem] border border-rose/30 bg-white/80 p-8 shadow-sm sm:p-10">
-        <p className="text-sm font-medium uppercase tracking-[0.2em] text-olive-dark">
-          Administrator access
-        </p>
-        <h1 className="mt-3 text-4xl font-medium">Sign in to the dashboard</h1>
-        <p className="mt-4 leading-relaxed text-charcoal/75">
-          Continue with the Google account that has been granted administrator access. The server
-          verifies the account’s trusted Firebase claim before opening the dashboard.
-        </p>
-        {error && (
-          <p className="mt-6 rounded-2xl border border-rose p-4 text-sm" role="alert">
-            {error}
+    <div className="min-h-screen bg-gradient-to-b from-brand-ivory via-sage/15 to-brand-ivory">
+      <main className="mx-auto flex min-h-screen max-w-xl flex-col justify-center px-6 py-16">
+        <Link to="/" className="text-sm font-medium text-brand-blue underline-offset-4 hover:text-terracotta-dark hover:underline">
+          ← Back to Mend and Blend
+        </Link>
+        <section className="mt-8 rounded-3xl border border-brand-blue/20 border-t-4 border-t-brand-blue bg-white p-8 shadow-md sm:p-10">
+          <p className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.2em] text-sage-dark">
+            <span className="h-px w-5 bg-gold-dark" aria-hidden="true" />
+            Administrator access
           </p>
-        )}
-        <button
-          type="button"
-          onClick={handleSignIn}
-          disabled={submitting}
-          className="mt-8 w-full rounded-full bg-brand-blue px-6 py-3 font-medium text-white transition-colors hover:bg-brand-blue/90 disabled:cursor-not-allowed disabled:opacity-50"
-        >
-          {submitting ? (
-            <span className="inline-flex items-center gap-3">
-              <span className="loading-spinner" aria-hidden="true" />
-              Verifying account…
-            </span>
-          ) : "Continue with Google"}
-        </button>
-      </section>
-    </main>
+          <h1 className="mt-3 text-4xl font-medium text-brand-blue">Sign in to the dashboard</h1>
+          <p className="mt-4 leading-relaxed text-charcoal/80">
+            Continue with the Google account that has been granted administrator access. The server
+            verifies the account’s trusted Firebase claim before opening the dashboard.
+          </p>
+          {error && (
+            <p className="mt-6 rounded-2xl border border-terracotta/50 bg-terracotta/10 p-4 text-sm text-terracotta-dark" role="alert">
+              {error}
+            </p>
+          )}
+          <button
+            type="button"
+            onClick={handleSignIn}
+            disabled={submitting}
+            className="mt-8 w-full rounded-full bg-brand-blue px-6 py-3 font-medium text-white shadow-sm transition-all hover:bg-brand-blue-dark hover:shadow-md disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            {submitting ? (
+              <span className="inline-flex items-center gap-3">
+                <span className="loading-spinner" aria-hidden="true" />
+                Verifying account…
+              </span>
+            ) : "Continue with Google"}
+          </button>
+        </section>
+      </main>
+    </div>
   );
 }
