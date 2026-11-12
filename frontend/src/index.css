@@ -52,6 +52,11 @@
 
   body {
     background-color: var(--color-brand-ivory);
+    background-image:
+      radial-gradient(65% 45% at 8% 12%, rgb(168 185 160 / 16%), transparent 70%),
+      radial-gradient(55% 40% at 92% 18%, rgb(217 130 107 / 10%), transparent 68%),
+      radial-gradient(60% 45% at 50% 60%, rgb(239 233 224 / 65%), transparent 75%),
+      radial-gradient(50% 40% at 15% 88%, rgb(217 130 107 / 9%), transparent 70%);
     color: var(--color-charcoal);
     font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;
@@ -60,6 +65,10 @@
 
   html.dark body {
     background-color: #181E22;
+    background-image:
+      radial-gradient(60% 45% at 10% 12%, rgb(168 185 160 / 8%), transparent 70%),
+      radial-gradient(55% 40% at 90% 20%, rgb(217 130 107 / 7%), transparent 68%),
+      radial-gradient(50% 40% at 18% 88%, rgb(64 95 128 / 12%), transparent 72%);
     color: #F2F0EC;
   }
 
@@ -397,7 +406,279 @@ body::before {
   inset: 0;
   z-index: 60;
   pointer-events: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.07'/%3E%3C/svg%3E");
+  opacity: 0.65;
+  mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.78' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.065'/%3E%3C/svg%3E");
+}
+
+html.dark body::before {
+  opacity: 0.32;
+  mix-blend-mode: soft-light;
+}
+
+/* Section background atmospheres & organic pseudo-element accents */
+.bg-hero-atmosphere {
+  background-color: var(--color-brand-ivory);
+  background-image:
+    radial-gradient(70% 60% at 12% 16%, rgb(168 185 160 / 26%), transparent 68%),
+    radial-gradient(52% 52% at 88% 22%, rgb(217 130 107 / 14%), transparent 65%),
+    radial-gradient(55% 45% at 52% 92%, rgb(229 189 121 / 14%), transparent 70%),
+    linear-gradient(135deg, #F8F7F5 0%, #F2F4EE 48%, #F6EDE6 100%);
+}
+
+html.dark .bg-hero-atmosphere {
+  background-color: #181E22;
+  background-image:
+    radial-gradient(65% 55% at 12% 18%, rgb(168 185 160 / 12%), transparent 70%),
+    radial-gradient(50% 50% at 88% 22%, rgb(217 130 107 / 11%), transparent 66%),
+    linear-gradient(135deg, #181E22 0%, #1C2524 52%, #231F20 100%);
+}
+
+.bg-hero-atmosphere::before,
+.bg-hero-atmosphere::after,
+.bg-about-atmosphere::before,
+.bg-about-atmosphere::after,
+.bg-workshops-atmosphere::before,
+.bg-workshops-atmosphere::after,
+.bg-founders-atmosphere::before,
+.bg-founders-atmosphere::after,
+.bg-contact-atmosphere::before,
+.bg-contact-atmosphere::after,
+.bg-footer-atmosphere::before,
+.bg-footer-atmosphere::after {
+  content: "";
+  position: absolute;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.bg-hero-atmosphere::before {
+  top: -6rem;
+  left: -7rem;
+  width: 26rem;
+  height: 26rem;
+  border-radius: 62% 38% 48% 52% / 56% 42% 58% 44%;
+  border: 1px solid rgb(168 185 160 / 35%);
+  background: radial-gradient(circle at 45% 45%, rgb(168 185 160 / 18%), transparent 72%);
+}
+
+.bg-hero-atmosphere::after {
+  right: -5rem;
+  bottom: -6rem;
+  width: 24rem;
+  height: 24rem;
+  border-radius: 50%;
+  border: 1px solid rgb(217 130 107 / 22%);
+  background: radial-gradient(circle at 40% 40%, rgb(217 130 107 / 14%), transparent 70%);
+}
+
+html.dark .bg-hero-atmosphere::before {
+  border-color: rgb(168 185 160 / 14%);
+  background: radial-gradient(circle at 45% 45%, rgb(168 185 160 / 9%), transparent 72%);
+}
+
+html.dark .bg-hero-atmosphere::after {
+  border-color: rgb(217 130 107 / 16%);
+  background: radial-gradient(circle at 40% 40%, rgb(217 130 107 / 9%), transparent 70%);
+}
+
+.bg-about-atmosphere {
+  background-color: #F4F5F0;
+  background-image:
+    radial-gradient(60% 50% at 92% 14%, rgb(168 185 160 / 24%), transparent 68%),
+    radial-gradient(50% 45% at 8% 85%, rgb(217 130 107 / 10%), transparent 66%),
+    linear-gradient(180deg, #EFF3EC 0%, #F5F2EC 50%, #F8F7F5 100%);
+}
+
+html.dark .bg-about-atmosphere {
+  background-color: #1B2321;
+  background-image:
+    radial-gradient(58% 50% at 90% 14%, rgb(168 185 160 / 10%), transparent 68%),
+    radial-gradient(48% 45% at 10% 85%, rgb(217 130 107 / 8%), transparent 68%),
+    linear-gradient(180deg, #1D2522 0%, #1B2123 52%, #181E22 100%);
+}
+
+.bg-about-atmosphere::before {
+  top: -4.5rem;
+  right: -5rem;
+  width: 22rem;
+  height: 22rem;
+  border-radius: 44% 56% 62% 38% / 48% 42% 58% 52%;
+  border: 1px solid rgb(168 185 160 / 30%);
+  background: radial-gradient(circle, rgb(168 185 160 / 15%), transparent 72%);
+}
+
+.bg-about-atmosphere::after {
+  bottom: -5rem;
+  left: -4rem;
+  width: 19rem;
+  height: 19rem;
+  border-radius: 58% 42% 45% 55% / 52% 60% 40% 48%;
+  background: radial-gradient(circle, rgb(229 189 121 / 16%), transparent 72%);
+}
+
+html.dark .bg-about-atmosphere::before {
+  border-color: rgb(168 185 160 / 12%);
+  background: radial-gradient(circle, rgb(168 185 160 / 8%), transparent 72%);
+}
+
+html.dark .bg-about-atmosphere::after {
+  background: radial-gradient(circle, rgb(229 189 121 / 8%), transparent 72%);
+}
+
+.bg-workshops-atmosphere {
+  background-color: var(--color-brand-ivory);
+  background-image:
+    radial-gradient(55% 45% at 14% 18%, rgb(229 189 121 / 14%), transparent 68%),
+    radial-gradient(52% 48% at 88% 82%, rgb(217 130 107 / 12%), transparent 70%),
+    linear-gradient(180deg, #F8F7F5 0%, #F5F1EB 54%, #F7EFE9 100%);
+}
+
+html.dark .bg-workshops-atmosphere {
+  background-color: #181E22;
+  background-image:
+    radial-gradient(52% 45% at 15% 18%, rgb(229 189 121 / 7%), transparent 68%),
+    radial-gradient(52% 48% at 88% 82%, rgb(217 130 107 / 8%), transparent 70%),
+    linear-gradient(180deg, #181E22 0%, #1B2125 54%, #1E2023 100%);
+}
+
+.bg-workshops-atmosphere::before {
+  top: 2.5rem;
+  right: -6rem;
+  width: 21rem;
+  height: 21rem;
+  border-radius: 50%;
+  border: 1px solid rgb(217 130 107 / 18%);
+  background: radial-gradient(circle, rgb(217 130 107 / 10%), transparent 72%);
+}
+
+.bg-workshops-atmosphere::after {
+  bottom: -5rem;
+  left: -5rem;
+  width: 20rem;
+  height: 20rem;
+  border-radius: 54% 46% 38% 62% / 44% 58% 42% 56%;
+  background: radial-gradient(circle, rgb(168 185 160 / 16%), transparent 72%);
+}
+
+html.dark .bg-workshops-atmosphere::before {
+  border-color: rgb(217 130 107 / 12%);
+  background: radial-gradient(circle, rgb(217 130 107 / 6%), transparent 72%);
+}
+
+html.dark .bg-workshops-atmosphere::after {
+  background: radial-gradient(circle, rgb(168 185 160 / 8%), transparent 72%);
+}
+
+.bg-founders-atmosphere {
+  background-color: #EFF3ED;
+  background-image:
+    radial-gradient(58% 55% at 86% 18%, rgb(168 185 160 / 24%), transparent 68%),
+    radial-gradient(52% 50% at 12% 82%, rgb(64 95 128 / 9%), transparent 70%),
+    linear-gradient(180deg, #EFF3EC 0%, #F4F3EE 55%, #F8F7F5 100%);
+}
+
+html.dark .bg-founders-atmosphere {
+  background-color: #1C2321;
+  background-image:
+    radial-gradient(56% 52% at 86% 20%, rgb(168 185 160 / 10%), transparent 68%),
+    radial-gradient(50% 48% at 14% 82%, rgb(64 95 128 / 12%), transparent 70%),
+    linear-gradient(180deg, #1B2321 0%, #192022 55%, #181E22 100%);
+}
+
+.bg-founders-atmosphere::before {
+  top: -4.5rem;
+  left: -4.5rem;
+  width: 18rem;
+  height: 18rem;
+  border-radius: 60% 40% 52% 48% / 46% 58% 42% 54%;
+  border: 1px solid rgb(168 185 160 / 32%);
+  background: radial-gradient(circle, rgb(168 185 160 / 16%), transparent 72%);
+}
+
+.bg-founders-atmosphere::after {
+  right: -4rem;
+  bottom: -4.5rem;
+  width: 20rem;
+  height: 20rem;
+  border-radius: 50%;
+  border: 1px solid rgb(229 189 121 / 25%);
+  background: radial-gradient(circle, rgb(229 189 121 / 12%), transparent 72%);
+}
+
+html.dark .bg-founders-atmosphere::before {
+  border-color: rgb(168 185 160 / 14%);
+  background: radial-gradient(circle, rgb(168 185 160 / 8%), transparent 72%);
+}
+
+html.dark .bg-founders-atmosphere::after {
+  border-color: rgb(229 189 121 / 12%);
+  background: radial-gradient(circle, rgb(229 189 121 / 6%), transparent 72%);
+}
+
+.bg-contact-atmosphere {
+  background-color: #F8F3EE;
+  background-image:
+    radial-gradient(62% 54% at 18% 20%, rgb(217 130 107 / 14%), transparent 68%),
+    radial-gradient(58% 52% at 86% 80%, rgb(168 185 160 / 22%), transparent 70%),
+    linear-gradient(135deg, #F8F7F5 0%, #F7EFE9 52%, #F3F4EE 100%);
+}
+
+html.dark .bg-contact-atmosphere {
+  background-color: #1D1F22;
+  background-image:
+    radial-gradient(60% 52% at 18% 22%, rgb(217 130 107 / 10%), transparent 68%),
+    radial-gradient(56% 50% at 85% 80%, rgb(168 185 160 / 10%), transparent 70%),
+    linear-gradient(135deg, #1B2024 0%, #221E20 55%, #1A2221 100%);
+}
+
+.bg-contact-atmosphere::before {
+  top: -5rem;
+  right: 8%;
+  width: 20rem;
+  height: 20rem;
+  border-radius: 50%;
+  border: 1px solid rgb(217 130 107 / 22%);
+  background: radial-gradient(circle, rgb(217 130 107 / 12%), transparent 72%);
+}
+
+.bg-contact-atmosphere::after {
+  bottom: -5.5rem;
+  left: -4rem;
+  width: 22rem;
+  height: 22rem;
+  border-radius: 48% 52% 64% 36% / 56% 40% 60% 44%;
+  border: 1px solid rgb(168 185 160 / 28%);
+  background: radial-gradient(circle, rgb(168 185 160 / 14%), transparent 72%);
+}
+
+html.dark .bg-contact-atmosphere::before {
+  border-color: rgb(217 130 107 / 14%);
+  background: radial-gradient(circle, rgb(217 130 107 / 7%), transparent 72%);
+}
+
+html.dark .bg-contact-atmosphere::after {
+  border-color: rgb(168 185 160 / 12%);
+  background: radial-gradient(circle, rgb(168 185 160 / 7%), transparent 72%);
+}
+
+.bg-footer-atmosphere::before {
+  top: -6rem;
+  right: -4rem;
+  width: 22rem;
+  height: 22rem;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgb(217 130 107 / 13%), transparent 70%);
+}
+
+.bg-footer-atmosphere::after {
+  bottom: -7rem;
+  left: -5rem;
+  width: 20rem;
+  height: 20rem;
+  border-radius: 50%;
+  border: 1px solid rgb(229 189 121 / 16%);
+  background: radial-gradient(circle, rgb(168 185 160 / 10%), transparent 72%);
 }
 
 /* Scroll reveal (see components/ui/Reveal.jsx) */

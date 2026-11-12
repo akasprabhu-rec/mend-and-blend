@@ -3,8 +3,8 @@ import { NAV_LINKS, SITE } from "../data/siteData.js";
 
 export default function Footer() {
   return (
-    <footer className="border-t-2 border-gold/40 bg-brand-blue px-6 py-14 text-white transition-colors duration-200 dark:border-gold/30 dark:bg-[#213347]">
-      <div className="mx-auto grid max-w-6xl gap-10 md:grid-cols-3">
+    <footer className="bg-footer-atmosphere relative overflow-hidden border-t-2 border-gold/40 bg-brand-blue px-6 py-14 text-white transition-colors duration-200 dark:border-gold/30 dark:bg-[#213347]">
+      <div className="relative z-10 mx-auto grid max-w-6xl gap-10 md:grid-cols-3">
         <div>
           <div className="flex items-center gap-3">
             <img src={logo} alt="" className="h-12 w-12 rounded-xl object-cover ring-1 ring-white/25" />
@@ -48,7 +48,7 @@ export default function Footer() {
           <p className="mt-2 text-brand-ivory/80">Nungambakkam, Chennai</p>
         </div>
       </div>
-      <div className="mx-auto mt-10 flex max-w-6xl flex-wrap items-center justify-between gap-3 border-t border-white/15 pt-6 text-xs text-brand-ivory/75">
+      <div className="relative z-10 mx-auto mt-10 flex max-w-6xl flex-wrap items-center justify-between gap-3 border-t border-white/15 pt-6 text-xs text-brand-ivory/75">
         <p>© {new Date().getFullYear()} Mend and Blend. All rights reserved.</p>
         <p className="inline-flex items-center gap-2 text-brand-ivory/80">
           <span className="h-1.5 w-1.5 rounded-full bg-terracotta" aria-hidden="true" />

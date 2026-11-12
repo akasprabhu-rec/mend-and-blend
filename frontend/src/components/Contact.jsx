@@ -10,7 +10,22 @@ export default function Contact() {
       eyebrow="Venue and contact"
       title="Come find us in Nungambakkam"
       intro="Questions about a session, or unsure which one is right for you? Reach out and we'll gladly help."
-      className="border-t border-sage/35 bg-gradient-to-br from-brand-blue/[0.06] via-sage/20 to-terracotta/12 dark:border-white/10 dark:from-[#1A232B] dark:via-[#1C2422] dark:to-[#241E1E]"
+      className="bg-contact-atmosphere border-t border-sage/35 dark:border-white/10"
+      decorations={
+        <svg
+          viewBox="0 0 200 120"
+          aria-hidden="true"
+          className="pointer-events-none absolute right-6 top-10 hidden h-28 w-44 text-terracotta/30 dark:text-terracotta/25 lg:block"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.25"
+          strokeLinecap="round"
+        >
+          <path d="M12 88 C58 34 114 30 186 72" />
+          <path d="M52 64 C48 44 62 34 74 44 C76 58 64 66 52 64 Z" />
+          <circle cx="144" cy="48" r="3.5" fill="currentColor" opacity="0.55" />
+        </svg>
+      }
     >
       <div className="grid gap-8 md:grid-cols-2">
         <Reveal className="h-full">

@@ -87,7 +87,7 @@ export default function Workshops() {
       eyebrow="Events"
       title="Gather, explore and grow"
       intro="Explore our published events and workshops. Each gathering offers a welcoming space for curiosity, connection and self-discovery."
-      className="border-t border-sage/30 bg-brand-ivory dark:border-white/10 dark:bg-[#181E22]"
+      className="bg-workshops-atmosphere border-t border-sage/30 dark:border-white/10"
     >
       <ul aria-label="Event dates" className="mb-10 flex flex-wrap gap-3">
         {dates.map((d) => (

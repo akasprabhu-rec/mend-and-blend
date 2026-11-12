@@ -51,13 +51,32 @@ export default function About() {
       eyebrow="About Mend and Blend"
       title="Mend what feels worn. Blend with what is real."
       intro="Our workshops invite you to explore the mind with curiosity instead of pressure. To mend is to tend to yourself with care. To blend is to bring all your parts, and the people around you, into the same room."
-      className="border-t border-sage/30 bg-gradient-to-b from-sage/20 via-sage/12 to-brand-ivory dark:border-white/10 dark:from-[#1D2522] dark:via-[#1B2225] dark:to-[#181E22]"
+      className="bg-about-atmosphere border-t border-sage/30 dark:border-white/10"
+      decorations={
+        <svg
+          viewBox="0 0 180 180"
+          aria-hidden="true"
+          className="pointer-events-none absolute right-6 top-10 hidden h-40 w-40 text-sage-dark/22 dark:text-sage/18 lg:block"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.25"
+          strokeLinecap="round"
+        >
+          <path d="M144 24 C112 58 98 104 106 156" />
+          <path d="M118 70 C92 66 80 80 86 96 C104 96 114 86 118 70 Z" />
+          <path d="M106 112 C132 104 148 118 140 134 C122 136 110 126 106 112 Z" />
+        </svg>
+      }
     >
       <div className="grid items-center gap-12 md:grid-cols-5">
         <Reveal className="mx-auto w-full max-w-sm md:col-span-2">
           <div className="relative">
             <div
-              className="absolute -inset-2.5 rounded-3xl border border-gold/50 bg-brand-ivory dark:border-gold/30 dark:bg-[#21292E]"
+              className="pointer-events-none absolute -inset-4 rounded-[2.5rem] bg-gradient-to-br from-sage/30 via-transparent to-terracotta/20 blur-xl dark:from-sage/15 dark:to-terracotta/15"
+              aria-hidden="true"
+            />
+            <div
+              className="pointer-events-none absolute -inset-2.5 rounded-3xl border border-gold/50 bg-brand-ivory/80 dark:border-gold/30 dark:bg-[#21292E]"
               aria-hidden="true"
             />
             <div className="image-frame relative rounded-2xl border border-brand-blue/15 bg-[#416187] p-2.5 shadow-lg dark:border-white/15">
